@@ -165,6 +165,8 @@ def scrape_once():
     """Single scrape attempt. Returns list of posts or empty list."""
     driver = None
     all_posts = []
+    target_headers = {}
+    cookies = []
     try:
         driver = make_driver()
         driver.execute_cdp_cmd("Network.enable", {})
