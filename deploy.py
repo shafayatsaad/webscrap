@@ -48,8 +48,27 @@ def prepare_dist():
         print(f"Created {DIST_DIR}")
 
     if os.path.exists(DATA_FILE):
-        shutil.copy2(DATA_FILE, DIST_DATA)
-        print(f"Synced data: {DATA_FILE} -> {DIST_DATA}")
+        # Load, clean, and re-save to ensure is_competition is present
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            posts = json.load(f)
+        
+        # Strip raw_item (bulky debug data) and ensure is_competition exists
+        cleaned = []
+        for p in posts:
+            p.pop("raw_item", None)
+            p.pop("content_id", None)
+            if "is_competition" not in p:
+                # Fallback detection
+                title = (p.get("title", "") or "").lower()
+                keywords = ["aideas", "mimamori", "kiro", "healthcare", "wellness"]
+                p["is_competition"] = any(kw in title for kw in keywords)
+            cleaned.append(p)
+        
+        with open(DIST_DATA, "w", encoding="utf-8") as f:
+            json.dump(cleaned, f, indent=2, ensure_ascii=False)
+        
+        comp_count = sum(1 for p in cleaned if p.get("is_competition"))
+        print(f"Synced data: {len(cleaned)} posts ({comp_count} competition) -> {DIST_DATA}")
     else:
         print(f"Error: {DATA_FILE} not found. Run scraper first.")
         return False
