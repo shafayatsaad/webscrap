@@ -1,7 +1,8 @@
 """
-AWS Builder Center - Live Dynamic Dashboard (v10 - Reliable)
-==============================================================
+AWS Builder Center - Live Dynamic Dashboard (v10.1 - Reliable + Full Data)
+==========================================================================
 Robust scraper with Chrome crash recovery, retries, and memory optimization.
+Now scrapes all feed pages (/posts, /articles) to ensure 60+ posts are found.
 Never shows empty state — always falls back to cached data.
 
 Run locally:  python dashboard.py
@@ -166,35 +167,45 @@ def scrape_once():
         driver = make_driver()
         driver.execute_cdp_cmd("Network.enable", {})
 
-        lg("Loading builder.aws.com...")
-        driver.get(BASE_URL)
-        time.sleep(3)
+        urls_to_scrape = [
+            BASE_URL,
+            f"{BASE_URL}/posts",
+            f"{BASE_URL}/articles"
+        ]
 
-        # Scroll to load posts
-        lg("Scrolling to load posts...")
-        last_h = 0
-        for i in range(12):
-            try:
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(1)
-                new_h = driver.execute_script("return document.body.scrollHeight")
-                if new_h == last_h:
-                    try:
-                        btns = driver.find_elements("xpath", "//button[contains(text(),'Load more')]")
-                        if btns:
-                            btns[0].click()
-                            time.sleep(1)
-                        else:
+        for url in urls_to_scrape:
+            lg(f"Loading {url.split('.com')[-1] or '/'}...")
+            driver.get(url)
+            time.sleep(3)
+
+            # Scroll to load posts
+            last_h = 0
+            for i in range(12):
+                try:
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    time.sleep(1)
+                    new_h = driver.execute_script("return document.body.scrollHeight")
+                    if new_h == last_h:
+                        try:
+                            # Also check for exact 'Load more' matches that might be hidden
+                            btns = driver.find_elements("xpath", "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]")
+                            if btns:
+                                driver.execute_script("arguments[0].click();", btns[0])
+                                time.sleep(1)
+                            else:
+                                break
+                        except Exception:
                             break
-                    except Exception:
-                        break
-                last_h = new_h
-            except Exception as e:
-                lg(f"Scroll error: {e}")
-                break
+                    last_h = new_h
+                except Exception as e:
+                    break
 
-        all_posts = extract_posts_from_logs(driver)
-        lg(f"Got {len(all_posts)} posts from main page")
+            page_posts = extract_posts_from_logs(driver)
+            lg(f"Found {len(page_posts)} posts on this page")
+            
+            for p in page_posts:
+                if not any(ap["id"] == p["id"] for ap in all_posts):
+                    all_posts.append(p)
 
     except Exception as e:
         lg(f"Chrome error: {type(e).__name__}: {str(e)[:80]}")
