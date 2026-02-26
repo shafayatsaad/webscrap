@@ -170,31 +170,102 @@ def scrape_once():
         driver = make_driver()
         driver.execute_cdp_cmd("Network.enable", {})
 
-        lg("Loading builder.aws.com to acquire auth token...")
+    try:
+        driver = make_driver()
+        driver.set_script_timeout(30)
+        lg("Loading builder.aws.com to establish trusted session...")
         driver.get(BASE_URL)
         time.sleep(4)
 
-        # Trigger one feed call so we can intercept the headers
+        # Trigger one random UI scroll to naturalize session
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
 
-        target_headers = {}
-        cookies = driver.get_cookies()
+        lg("Auth session established. Fetching all paginated data via CDP injection...")
+        
+        # Inject JavaScript to fetch all pages naturally using the browser's own networking
+        fetch_js = """
+        var done = arguments[0];
+        
+        async function fetchAll() {
+            try {
+                // Find token either in localStorage or cookies if needed, though fetch will auto-attach cookies
+                let t = localStorage.getItem('builder-session-token');
+                if (!t) {
+                    let keys = Object.keys(localStorage);
+                    for(let k of keys) {
+                        if(localStorage[k].includes('eyJ')) t = localStorage[k];
+                    }
+                }
+                
+                let headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                };
+                if (t) headers['builder-session-token'] = t;
 
-        try:
-            logs = driver.get_log("performance")
-            for entry in logs:
-                try:
-                    msg = json.loads(entry["message"])["message"]
-                    if msg["method"] == "Network.requestWillBeSent":
-                        req = msg.get("params", {}).get("request", {})
-                        if "/cs/content/feed" in req.get("url", ""):
-                            target_headers = req.get("headers", {})
-                            break
-                except Exception:
-                    continue
-        except Exception as e:
-            lg(f"Log extract error: {e}")
+                let all_items = [];
+                for (let type of ['article', 'post', 'wish']) {
+                    let nextToken = null;
+                    while (true) {
+                        let payload = { contentType: type, pageSize: 100 };
+                        if (nextToken) payload.nextToken = nextToken;
+                        
+                        let res = await fetch('/cs/content/feed', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (!res.ok) break;
+                        let data = await res.json();
+                        let items = data.feedContents || [];
+                        all_items.push(...items);
+                        
+                        nextToken = data.nextToken;
+                        if (!nextToken) break;
+                        await new Promise(r => setTimeout(r, 600)); // sleep gently
+                    }
+                }
+                done({success: true, data: all_items});
+            } catch (e) {
+                done({success: false, error: e.toString()});
+            }
+        }
+        
+        fetchAll();
+        """
+        
+        res = driver.execute_async_script(fetch_js)
+        
+        if res and res.get('success'):
+            raw_items = res.get('data', [])
+            lg(f"JS Fetch complete. Extracted {len(raw_items)} raw objects.")
+            
+            for item in raw_items:
+                cid = item.get("contentId", "")
+                uri = item.get("uri", "")
+                url_ = f"{BASE_URL}{uri}" if uri else (f"{BASE_URL}/content/{cid.split('/')[-1]}" if cid else BASE_URL)
+                
+                post = {
+                    "id": cid, "title": item.get("title", "Untitled"),
+                    "content_type": item.get("contentType", ""),
+                    "likes_count": item.get("likesCount", 0),
+                    "comments_count": item.get("commentsCount", 0),
+                    "views_count": item.get("viewsCount"),
+                    "created_at": format_timestamp(item.get("createdAt")),
+                    "last_published_at": format_timestamp(item.get("lastPublishedAt")),
+                    "uri": uri, "url": url_,
+                    "status": item.get("status", ""),
+                    "locale": item.get("locale", ""),
+                    "author_alias": (item.get("author") or {}).get("alias", "N/A"),
+                    "author_name": (item.get("author") or {}).get("preferredName", "N/A"),
+                    "follow_count": item.get("followCount", 0),
+                }
+                if not any(ap["id"] == post["id"] for ap in all_posts):
+                    all_posts.append(post)
+        else:
+            lg(f"JS Fetch failed: {res.get('error') if res else 'Unknown timeout'}")
 
     except Exception as e:
         lg(f"Chrome error: {type(e).__name__}: {str(e)[:80]}")
@@ -205,74 +276,6 @@ def scrape_once():
             except Exception:
                 pass
 
-    if not target_headers:
-        lg("Failed to acquire auth headers. Aborting this scrape attempt.")
-        return []
-
-    lg("Auth acquired. Searching all feeds via fast API pagination...")
-    s = requests.Session()
-    
-    # Apply verbatim matching headers to avoid 403 bots
-    for k, v in target_headers.items():
-        if k.lower() not in ['content-length', 'accept-encoding']:
-            s.headers[k] = v
-            
-    # Apply all cookies
-    for c in cookies:
-        s.cookies.set(c['name'], c['value'])
-
-    # Search categories: article, post, wish
-    for c_type in ['article', 'post', 'wish']:
-        next_token = None
-        page = 1
-        while True:
-            lg(f"Fetching {c_type}s (Page {page})...")
-            payload = {'contentType': c_type, 'pageSize': 100}
-            if next_token:
-                payload['nextToken'] = next_token
-                
-            try:
-                res = s.post(f"{BASE_URL}/cs/content/feed", json=payload, timeout=15)
-                if res.status_code != 200:
-                    lg(f"API Error {res.status_code} for {c_type}")
-                    break
-                    
-                data = res.json()
-                items = data.get('feedContents', [])
-                for item in items:
-                    cid = item.get("contentId", "")
-                    uri = item.get("uri", "")
-                    url_ = f"{BASE_URL}{uri}" if uri else (f"{BASE_URL}/content/{cid.split('/')[-1]}" if cid else BASE_URL)
-                    
-                    post = {
-                        "id": cid, "title": item.get("title", "Untitled"),
-                        "content_type": item.get("contentType", ""),
-                        "likes_count": item.get("likesCount", 0),
-                        "comments_count": item.get("commentsCount", 0),
-                        "views_count": item.get("viewsCount"),
-                        "created_at": format_timestamp(item.get("createdAt")),
-                        "last_published_at": format_timestamp(item.get("lastPublishedAt")),
-                        "uri": uri, "url": url_,
-                        "status": item.get("status", ""),
-                        "locale": item.get("locale", ""),
-                        "author_alias": (item.get("author") or {}).get("alias", "N/A"),
-                        "author_name": (item.get("author") or {}).get("preferredName", "N/A"),
-                        "follow_count": item.get("followCount", 0),
-                    }
-                    if not any(ap["id"] == post["id"] for ap in all_posts):
-                        all_posts.append(post)
-                
-                next_token = data.get('nextToken')
-                if not next_token:
-                    break
-                page += 1
-                time.sleep(0.5)  # Be nice to API
-                
-            except Exception as e:
-                lg(f"API Fetch Error: {e}")
-                break
-
-    lg(f"API pagination complete. Total posts grabbed: {len(all_posts)}")
     return all_posts
 
 
