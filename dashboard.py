@@ -812,12 +812,16 @@ DASHBOARD_HTML = r"""
 </html>
 """
 
-# ── Start Server ──
-if __name__ == "__main__":
-    cached_posts, cached_time = load_cached_data()
-    if cached_posts:
-        scrape_data["posts"] = cached_posts
-        scrape_data["last_updated"] = cached_time
+# ── Auto-start background scraper (works with both gunicorn and local) ──
+cached_posts, cached_time = load_cached_data()
+if cached_posts:
+    scrape_data["posts"] = cached_posts
+    scrape_data["last_updated"] = cached_time
 
-    threading.Thread(target=auto_scrape_loop, daemon=True).start()
-    app.run(host="0.0.0.0", port=5000, debug=False)
+# Start auto-scrape thread (daemon so it dies with the process)
+_scrape_thread = threading.Thread(target=auto_scrape_loop, daemon=True)
+_scrape_thread.start()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

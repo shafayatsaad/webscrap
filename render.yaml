@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: aws-builder-rankings
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: gunicorn dashboard:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: HEADLESS
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.10.12"
+    plan: free
