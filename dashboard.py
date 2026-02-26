@@ -169,99 +169,59 @@ def scrape_once():
     try:
         driver = make_driver()
         driver.set_script_timeout(30)
-        lg("Loading builder.aws.com to establish trusted session...")
-        driver.get(BASE_URL)
-        time.sleep(4)
+        driver.execute_cdp_cmd("Network.enable", {})
 
-        # Trigger one random UI scroll to naturalize session
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
+        urls_to_scrape = [
+            BASE_URL,
+            f"{BASE_URL}/posts",
+            f"{BASE_URL}/articles"
+        ]
 
-        lg("Auth session established. Fetching all paginated data via CDP injection...")
-        
-        # Inject JavaScript to fetch all pages naturally using the browser's own networking
-        fetch_js = """
-        var done = arguments[0];
-        
-        async function fetchAll() {
-            try {
-                // Find token either in localStorage or cookies if needed, though fetch will auto-attach cookies
-                let t = localStorage.getItem('builder-session-token');
-                if (!t) {
-                    let keys = Object.keys(localStorage);
-                    for(let k of keys) {
-                        if(localStorage[k].includes('eyJ')) t = localStorage[k];
-                    }
-                }
-                
-                let headers = {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                };
-                if (t) headers['builder-session-token'] = t;
+        for url in urls_to_scrape:
+            lg(f"Loading {url.split('.com')[-1] or '/'}...")
+            driver.get(url)
+            time.sleep(3)
 
-                let all_items = [];
-                for (let type of ['article', 'post', 'wish']) {
-                    let nextToken = null;
-                    while (true) {
-                        let payload = { contentType: type, pageSize: 100 };
-                        if (nextToken) payload.nextToken = nextToken;
-                        
-                        let res = await fetch('/cs/content/feed', {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        if (!res.ok) break;
-                        let data = await res.json();
-                        let items = data.feedContents || [];
-                        all_items.push(...items);
-                        
-                        nextToken = data.nextToken;
-                        if (!nextToken) break;
-                        await new Promise(r => setTimeout(r, 600)); // sleep gently
-                    }
-                }
-                done({success: true, data: all_items});
-            } catch (e) {
-                done({success: false, error: e.toString()});
-            }
-        }
-        
-        fetchAll();
-        """
-        
-        res = driver.execute_async_script(fetch_js)
-        
-        if res and res.get('success'):
-            raw_items = res.get('data', [])
-            lg(f"JS Fetch complete. Extracted {len(raw_items)} raw objects.")
+            # Smooth scrolling to trigger React intersection observers
+            scroll_count = 0
+            last_h = 0
             
-            for item in raw_items:
-                cid = item.get("contentId", "")
-                uri = item.get("uri", "")
-                url_ = f"{BASE_URL}{uri}" if uri else (f"{BASE_URL}/content/{cid.split('/')[-1]}" if cid else BASE_URL)
+            while scroll_count < 15:
+                # Scroll by half viewport to guarantee triggers
+                driver.execute_script("window.scrollBy(0, window.innerHeight * 0.6);")
+                time.sleep(0.8)
                 
-                post = {
-                    "id": cid, "title": item.get("title", "Untitled"),
-                    "content_type": item.get("contentType", ""),
-                    "likes_count": item.get("likesCount", 0),
-                    "comments_count": item.get("commentsCount", 0),
-                    "views_count": item.get("viewsCount"),
-                    "created_at": format_timestamp(item.get("createdAt")),
-                    "last_published_at": format_timestamp(item.get("lastPublishedAt")),
-                    "uri": uri, "url": url_,
-                    "status": item.get("status", ""),
-                    "locale": item.get("locale", ""),
-                    "author_alias": (item.get("author") or {}).get("alias", "N/A"),
-                    "author_name": (item.get("author") or {}).get("preferredName", "N/A"),
-                    "follow_count": item.get("followCount", 0),
-                }
-                if not any(ap["id"] == post["id"] for ap in all_posts):
-                    all_posts.append(post)
-        else:
-            lg(f"JS Fetch failed: {res.get('error') if res else 'Unknown timeout'}")
+                # Check for Load More buttons
+                try:
+                    btns = driver.find_elements("xpath", "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]")
+                    if btns:
+                        driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btns[0])
+                        time.sleep(0.5)
+                        driver.execute_script("arguments[0].click();", btns[0])
+                        time.sleep(1.5)
+                except Exception:
+                    pass
+
+                new_h = driver.execute_script("return document.body.scrollHeight")
+                scroll_pos = driver.execute_script("return window.scrollY + window.innerHeight")
+                
+                if scroll_pos >= new_h - 100:
+                    # Trapped at bottom, wait a sec to see if more loads
+                    time.sleep(1)
+                    if driver.execute_script("return document.body.scrollHeight") == new_h:
+                        break # genuinely end of page
+                
+                last_h = new_h
+                scroll_count += 1
+
+            page_posts = extract_posts_from_logs(driver)
+            lg(f"Intercepted {len(page_posts)} posts on this page")
+            
+            for p in page_posts:
+                if not any(ap["id"] == p["id"] for ap in all_posts):
+                    all_posts.append(p)
+                    
+            driver.execute_cdp_cmd("Network.clearBrowserCache", {})
 
     except Exception as e:
         lg(f"Chrome error: {type(e).__name__}: {str(e)[:80]}")
@@ -272,6 +232,7 @@ def scrape_once():
             except Exception:
                 pass
 
+    lg(f"Total authentic posts grabbed: {len(all_posts)}")
     return all_posts
 
 
