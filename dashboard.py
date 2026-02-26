@@ -1,9 +1,10 @@
 """
-AWS Builder Center - Live Dynamic Dashboard (v6)
+AWS Builder Center - Live Dynamic Dashboard (v7)
 =================================================
-Fully dynamic Flask dashboard with on-demand scraping.
-No auto-refresh — uses manual Refresh button.
-Designed for Render.com free tier deployment.
+Fully dynamic Flask dashboard.
+- Auto-scrape every 5 minutes (keeps Render alive).
+- Manual "Update Now" button for immediate refresh.
+- Designed for Render.com deployment.
 
 Run locally:  python dashboard.py
 Deploy:       gunicorn dashboard:app --bind 0.0.0.0:$PORT
@@ -12,6 +13,7 @@ Deploy:       gunicorn dashboard:app --bind 0.0.0.0:$PORT
 import json
 import os
 import sys
+import time
 import threading
 from datetime import datetime
 
@@ -48,6 +50,7 @@ scrape_data = {
     "error": None,
 }
 data_lock = threading.Lock()
+AUTO_SCRAPE_INTERVAL = 300  # 5 minutes
 
 JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "aws_builder_likes.json")
 
@@ -121,6 +124,14 @@ def run_scraper():
     finally:
         with data_lock:
             scrape_data["is_scraping"] = False
+
+
+def auto_scrape_loop():
+    """Background loop: scrape every 5 minutes to keep data fresh."""
+    time.sleep(15)  # Initial delay to let server start
+    while True:
+        run_scraper()
+        time.sleep(AUTO_SCRAPE_INTERVAL)
 
 
 # ── Routes ──
@@ -343,7 +354,8 @@ DASHBOARD_HTML = r"""
                 <h1>AWS Builder Rankings</h1>
                 <div class="header-meta">
                     <div class="live-dot"></div>
-                    <span class="update-txt" id="lastUpdated">Click Refresh to update</span>
+                    <span class="update-txt" id="lastUpdated">Starting up...</span>
+                    <span class="update-txt" id="nextRefresh" style="margin-left:6px"></span>
                 </div>
             </div>
             <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()">
@@ -515,6 +527,19 @@ DASHBOARD_HTML = r"""
             }
         }
 
+        // Auto-refresh UI data every 30s (reads from server which auto-scrapes every 5 min)
+        let countdown = 300;
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = 300;
+            const m = Math.floor(countdown / 60);
+            const s = countdown % 60;
+            const el = document.getElementById('nextRefresh');
+            if (el) el.textContent = `· Next auto-scrape in ${m}:${s.toString().padStart(2,'0')}`;
+        }, 1000);
+
+        // Refresh UI data every 30 seconds
+        setInterval(loadData, 30000);
         loadData();
     </script>
 </body>
@@ -526,6 +551,10 @@ cached_posts, cached_time = load_cached_data()
 if cached_posts:
     scrape_data["posts"] = cached_posts
     scrape_data["last_updated"] = cached_time
+
+# Start auto-scrape thread (works with both gunicorn and local)
+_scrape_thread = threading.Thread(target=auto_scrape_loop, daemon=True)
+_scrape_thread.start()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
