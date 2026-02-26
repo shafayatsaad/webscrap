@@ -171,10 +171,9 @@ def scrape_once():
         driver.set_script_timeout(30)
         driver.execute_cdp_cmd("Network.enable", {})
 
+        # AWS moved everything to the root page, /posts and /articles return 404 now.
         urls_to_scrape = [
-            BASE_URL,
-            f"{BASE_URL}/posts",
-            f"{BASE_URL}/articles"
+            BASE_URL
         ]
 
         for url in urls_to_scrape:
@@ -186,7 +185,8 @@ def scrape_once():
             scroll_count = 0
             last_h = 0
             
-            while scroll_count < 15:
+            # Increased scroll count heavily since everything is on one page now
+            while scroll_count < 35:
                 # Scroll by half viewport to guarantee triggers
                 driver.execute_script("window.scrollBy(0, window.innerHeight * 0.6);")
                 time.sleep(0.8)
