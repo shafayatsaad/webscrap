@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AWS Builder - Live Rankings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #050810;
+            --bg-secondary: #0d111d;
+            --bg-card: #151b2d;
+            --bg-card-hover: #1c243a;
+            --accent: #ff9900;
+            --accent-glow: rgba(255, 153, 0, 0.4);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-dim: #6b7280;
+            --green: #10b981;
+            --red: #ef4444;
+            --gold: #ffb800;
+            --silver: #cbd5e1;
+            --bronze: #cd7f32;
+            --border: #232d45;
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
+        .bg-mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: var(--bg-primary); background-image: radial-gradient(at 0% 0%, rgba(255, 153, 0, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 24px 16px 80px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .header-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); color: var(--green); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); text-align: center; }
+        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
+        .stat-value { font-size: 24px; font-weight: 800; color: var(--text-primary); }
+        .highlight-card { background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--accent); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; position: relative; box-shadow: 0 0 30px var(--accent-glow); }
+        .hl-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .hl-badge { background: var(--accent); color: #000; padding: 4px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; }
+        .hl-rank-lg { font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; }
+        .hl-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #fff; }
+        .hl-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px; }
+        .ctx-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .ctx-title { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+        .ctx-item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; }
+        .climb-badge { background: rgba(16, 185, 129, 0.15); color: var(--green); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-top: 4px; display: inline-block; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filter-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .rank-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; transition: all 0.2s; }
+        .rank-item.highlighted { border-color: var(--accent); background: rgba(255, 153, 0, 0.05); }
+        .rank-num { width: 40px; font-size: 22px; font-weight: 900; color: var(--text-dim); text-align: center; flex-shrink: 0; }
+        .rank-info { flex-grow: 1; min-width: 0; }
+        .item-title { font-size: 15px; font-weight: 700; color: var(--text-primary); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .item-meta { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 10px; }
+        .comp-tag { color: #3b82f6; font-weight: 800; font-size: 9px; text-transform: uppercase; }
+        .item-stats { text-align: right; flex-shrink: 0; }
+        .likes-val { font-size: 20px; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
+        .likes-lbl { font-size: 9px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
+        
+        /* ── Action Bar ── */
+        .action-bar {
+            position: fixed;
+            bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(21, 27, 45, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+        .refresh-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .gh-link {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .gh-link:hover { color: var(--accent); }
+
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .spinner { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div id="loadingOverlay"><div class="spinner"></div></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 class="header-title">AWS Builder</h1>
+                <div class="live-badge" id="liveBadge">Live Automated</div>
+            </div>
+            <div style="text-align:right">
+                <div id="countdown" style="font-size:10px; color:var(--text-dim); font-weight:700">Auto-refresh in 60s</div>
+                <div style="font-size:11px; color:var(--text-secondary); font-weight:600">Netlify Cloud Dashboard</div>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Posts</div><div class="stat-value" id="statPosts">--</div></div>
+            <div class="stat-card"><div class="stat-label">Comp</div><div class="stat-value" id="statComp">--</div></div>
+            <div class="stat-card"><div class="stat-label">Total Likes</div><div class="stat-value" id="statLikes">--</div></div>
+            <div class="stat-card"><div class="stat-label">Avg</div><div class="stat-value" id="statAvg">--</div></div>
+        </div>
+        <div id="highlightContainer"></div>
+        <div class="controls">
+            <button class="filter-btn active" id="btnAll" onclick="setFilter('all')">All</button>
+            <button class="filter-btn" id="btnComp" onclick="setFilter('comp')">Competition</button>
+        </div>
+        <div class="rankings-list" id="rankingsList"></div>
+    </div>
+
+    <!-- Active Bar -->
+    <div class="action-bar">
+        <div style="font-size:11px; font-weight:700" id="lastUpdated">Updated: --:--</div>
+        <button class="refresh-btn" id="reloadBtn" onclick="fetchData(true)">Sync UI</button>
+        <a href="#" id="ghTriggerLink" class="gh-link" target="_blank">Manual Trigger (GH)</a>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let fullData = null;
+        let countdownSec = 60;
+        const HIGHLIGHT_URI = "/content/3AAMRb7lRzAJnleldfYBBtfM1WG/aideas-transforming-healthcare-into-ai-powered-wellness-companion";
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(filter === 'all' ? 'btnAll' : 'btnComp').classList.add('active');
+            renderData();
+        }
+
+        async function fetchData(manual = false) {
+            if (manual) document.getElementById('reloadBtn').textContent = 'Syncing...';
+            try {
+                // Fetch with cache busting
+                const res = await fetch('data.json?t=' + Date.now());
+                const posts = await res.json();
+                
+                const total_likes = posts.reduce((acc, p) => acc + (p.likes_count || 0), 0);
+                const avg_likes = (total_likes / posts.length).toFixed(1);
+                const comp_posts = posts.filter(p => p.is_competition);
+                
+                let h_rank = null, h_post = null, h_nearby = [], climbs = 0;
+                posts.forEach((p, i) => {
+                    const pid = p.id || "";
+                    const puri = p.uri || "";
+                    if (HIGHLIGHT_URI.includes(pid) || (puri && HIGHLIGHT_URI.includes(puri))) {
+                        h_rank = i + 1; h_post = p;
+                        if (i > 0) {
+                            const above = posts[i-1];
+                            h_nearby.push({ rank: i, title: above.title, likes_count: above.likes_count });
+                            climbs = (above.likes_count - p.likes_count) + 1;
+                        }
+                        if (i < posts.length - 1) {
+                            const below = posts[i+1];
+                            h_nearby.push({ rank: i+2, title: below.title, likes_count: below.likes_count });
+                        }
+                    }
+                });
+
+                fullData = { posts, h_post, h_rank, h_nearby, climbs, stats: { total_posts: posts.length, comp_posts: comp_posts.length, total_likes, avg_likes } };
+                
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('reloadBtn').textContent = 'Sync UI';
+                
+                const now = new Date();
+                document.getElementById('lastUpdated').textContent = `Updated: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                
+                updateUI();
+                countdownSec = 60;
+            } catch (e) {
+                console.error(e);
+                document.getElementById('reloadBtn').textContent = 'Error';
+            }
+        }
+
+        function updateUI() {
+            const { stats } = fullData;
+            document.getElementById('statPosts').textContent = stats.total_posts;
+            document.getElementById('statComp').textContent = stats.comp_posts;
+            document.getElementById('statLikes').textContent = stats.total_likes;
+            document.getElementById('statAvg').textContent = stats.avg_likes;
+            renderData();
+        }
+
+        function renderData() {
+            const { posts, h_post, h_rank, h_nearby, climbs } = fullData;
+            const hlContainer = document.getElementById('highlightContainer');
+            if (h_post) {
+                const pct = ((h_rank / posts.length) * 100).toFixed(1);
+                let ctxHTML = h_nearby.length > 0 ? `<div class="ctx-section"><div class="ctx-title">Neighborhood</div>${h_nearby.map(n => `<div class="ctx-item"><span>#${n.rank} ${n.title.substring(0,25)}...</span><span style="font-weight:800; color:var(--accent)">${n.likes_count} likes</span></div>`).join('')}${h_rank > 1 ? `<div class="climb-badge">Need ${climbs} more likes to climb!</div>` : ''}</div>` : '';
+                hlContainer.innerHTML = `<div class="highlight-card"><div class="hl-header"><div class="hl-badge">YOUR POST</div><div class="hl-rank-lg">#${h_rank}</div></div><h2 class="hl-title">${h_post.title}</h2><div class="hl-grid"><div style="text-align:center"><span style="display:block;font-size:10px;color:var(--text-dim);font-weight:800">LIKES</span><span style="font-size:20px;font-weight:800">${h_post.likes_count}</span></div><div style="text-align:center"><span style="display:block;font-size:10px;color:var(--text-dim);font-weight:800">TOP</span><span style="font-size:20px;font-weight:800">${pct}%</span></div></div>${ctxHTML}</div>`;
+            }
+            const list = document.getElementById('rankingsList');
+            const filtered = currentFilter === 'all' ? posts : posts.filter(p => p.is_competition);
+            list.innerHTML = filtered.map((p, idx) => {
+                const r = posts.indexOf(p) + 1;
+                const isHL = h_post && p.id === h_post.id;
+                const medal = r === 1 ? '🥇' : r === 2 ? '🥈' : r === 3 ? '🥉' : r;
+                return `<div class="rank-item ${isHL ? 'highlighted' : ''}"><div class="rank-num">${medal}</div><div class="rank-info"><a href="${p.url}" target="_blank" class="item-title">${p.title}</a><div class="item-meta"><span>@${p.author_alias}</span>${p.is_competition?'<span class="comp-tag">Comp</span>':''}</div></div><div class="item-stats"><span class="likes-val">${p.likes_count}</span><span class="likes-lbl">Likes</span></div></div>`;
+            }).join('');
+        }
+
+        // Countdown Timer
+        setInterval(() => {
+            countdownSec--;
+            if (countdownSec <= 0) {
+                fetchData();
+            } else {
+                document.getElementById('countdown').textContent = `Auto-refresh in ${countdownSec}s`;
+            }
+        }, 1000);
+
+        // Try to guess Repo URL back to Actions
+        const currentURL = window.location.hostname;
+        // If hosted on Netlify, we can't easily guess Repo link, but User can fill it later.
+        document.getElementById('ghTriggerLink').href = "https://github.com";
+
+        fetchData();
+    </script>
+</body>
+</html>
