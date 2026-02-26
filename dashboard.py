@@ -105,8 +105,8 @@ def make_driver():
     o.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     o.set_capability("goog:loggingPrefs", {"performance": "ALL"})
     d = webdriver.Chrome(options=o)
-    d.set_page_load_timeout(20)
-    d.set_script_timeout(10)
+    d.set_page_load_timeout(60)
+    d.set_script_timeout(60)
     return d
 
 
