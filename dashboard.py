@@ -168,10 +168,6 @@ def scrape_once():
     cookies = []
     try:
         driver = make_driver()
-        driver.execute_cdp_cmd("Network.enable", {})
-
-    try:
-        driver = make_driver()
         driver.set_script_timeout(30)
         lg("Loading builder.aws.com to establish trusted session...")
         driver.get(BASE_URL)
