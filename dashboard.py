@@ -159,6 +159,8 @@ def extract_posts_from_logs(driver):
     return posts
 
 
+import requests
+
 def scrape_once():
     """Single scrape attempt. Returns list of posts or empty list."""
     driver = None
@@ -167,45 +169,31 @@ def scrape_once():
         driver = make_driver()
         driver.execute_cdp_cmd("Network.enable", {})
 
-        urls_to_scrape = [
-            BASE_URL,
-            f"{BASE_URL}/posts",
-            f"{BASE_URL}/articles"
-        ]
+        lg("Loading builder.aws.com to acquire auth token...")
+        driver.get(BASE_URL)
+        time.sleep(4)
 
-        for url in urls_to_scrape:
-            lg(f"Loading {url.split('.com')[-1] or '/'}...")
-            driver.get(url)
-            time.sleep(3)
+        # Trigger one feed call so we can intercept the headers
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)
 
-            # Scroll to load posts
-            last_h = 0
-            for i in range(12):
+        target_headers = {}
+        cookies = driver.get_cookies()
+
+        try:
+            logs = driver.get_log("performance")
+            for entry in logs:
                 try:
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(1)
-                    new_h = driver.execute_script("return document.body.scrollHeight")
-                    if new_h == last_h:
-                        try:
-                            # Also check for exact 'Load more' matches that might be hidden
-                            btns = driver.find_elements("xpath", "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]")
-                            if btns:
-                                driver.execute_script("arguments[0].click();", btns[0])
-                                time.sleep(1)
-                            else:
-                                break
-                        except Exception:
+                    msg = json.loads(entry["message"])["message"]
+                    if msg["method"] == "Network.requestWillBeSent":
+                        req = msg.get("params", {}).get("request", {})
+                        if "/cs/content/feed" in req.get("url", ""):
+                            target_headers = req.get("headers", {})
                             break
-                    last_h = new_h
-                except Exception as e:
-                    break
-
-            page_posts = extract_posts_from_logs(driver)
-            lg(f"Found {len(page_posts)} posts on this page")
-            
-            for p in page_posts:
-                if not any(ap["id"] == p["id"] for ap in all_posts):
-                    all_posts.append(p)
+                except Exception:
+                    continue
+        except Exception as e:
+            lg(f"Log extract error: {e}")
 
     except Exception as e:
         lg(f"Chrome error: {type(e).__name__}: {str(e)[:80]}")
@@ -215,6 +203,75 @@ def scrape_once():
                 driver.quit()
             except Exception:
                 pass
+
+    if not target_headers:
+        lg("Failed to acquire auth headers. Aborting this scrape attempt.")
+        return []
+
+    lg("Auth acquired. Searching all feeds via fast API pagination...")
+    s = requests.Session()
+    
+    # Apply verbatim matching headers to avoid 403 bots
+    for k, v in target_headers.items():
+        if k.lower() not in ['content-length', 'accept-encoding']:
+            s.headers[k] = v
+            
+    # Apply all cookies
+    for c in cookies:
+        s.cookies.set(c['name'], c['value'])
+
+    # Search categories: article, post, wish
+    for c_type in ['article', 'post', 'wish']:
+        next_token = None
+        page = 1
+        while True:
+            lg(f"Fetching {c_type}s (Page {page})...")
+            payload = {'contentType': c_type, 'pageSize': 100}
+            if next_token:
+                payload['nextToken'] = next_token
+                
+            try:
+                res = s.post(f"{BASE_URL}/cs/content/feed", json=payload, timeout=15)
+                if res.status_code != 200:
+                    lg(f"API Error {res.status_code} for {c_type}")
+                    break
+                    
+                data = res.json()
+                items = data.get('feedContents', [])
+                for item in items:
+                    cid = item.get("contentId", "")
+                    uri = item.get("uri", "")
+                    url_ = f"{BASE_URL}{uri}" if uri else (f"{BASE_URL}/content/{cid.split('/')[-1]}" if cid else BASE_URL)
+                    
+                    post = {
+                        "id": cid, "title": item.get("title", "Untitled"),
+                        "content_type": item.get("contentType", ""),
+                        "likes_count": item.get("likesCount", 0),
+                        "comments_count": item.get("commentsCount", 0),
+                        "views_count": item.get("viewsCount"),
+                        "created_at": format_timestamp(item.get("createdAt")),
+                        "last_published_at": format_timestamp(item.get("lastPublishedAt")),
+                        "uri": uri, "url": url_,
+                        "status": item.get("status", ""),
+                        "locale": item.get("locale", ""),
+                        "author_alias": (item.get("author") or {}).get("alias", "N/A"),
+                        "author_name": (item.get("author") or {}).get("preferredName", "N/A"),
+                        "follow_count": item.get("followCount", 0),
+                    }
+                    if not any(ap["id"] == post["id"] for ap in all_posts):
+                        all_posts.append(post)
+                
+                next_token = data.get('nextToken')
+                if not next_token:
+                    break
+                page += 1
+                time.sleep(0.5)  # Be nice to API
+                
+            except Exception as e:
+                lg(f"API Fetch Error: {e}")
+                break
+
+    lg(f"API pagination complete. Total posts grabbed: {len(all_posts)}")
     return all_posts
 
 
