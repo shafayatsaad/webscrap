@@ -1,10 +1,11 @@
 """
-AWS Builder Center - Live Dynamic Dashboard (v7)
-=================================================
-Fully dynamic Flask dashboard.
-- Auto-scrape every 5 minutes (keeps Render alive).
+AWS Builder Center - Live Dynamic Dashboard (v8 - Final)
+=========================================================
+Fully dynamic Flask dashboard with real-time scraping.
+- Auto-scrape every 5 minutes.
 - Manual "Update Now" button for immediate refresh.
-- Designed for Render.com deployment.
+- Competition detection always applied.
+- Error reporting in UI.
 
 Run locally:  python dashboard.py
 Deploy:       gunicorn dashboard:app --bind 0.0.0.0:$PORT
@@ -15,6 +16,7 @@ import os
 import sys
 import time
 import threading
+import traceback
 from datetime import datetime
 
 # Fix Windows encoding
@@ -48,11 +50,28 @@ scrape_data = {
     "last_updated": None,
     "is_scraping": False,
     "error": None,
+    "scrape_log": [],  # Last N log messages for debugging
 }
 data_lock = threading.Lock()
 AUTO_SCRAPE_INTERVAL = 300  # 5 minutes
 
 JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "aws_builder_likes.json")
+
+# Competition keywords (inline for cached data without is_competition)
+COMP_KEYWORDS = ["aideas", "ai ideas", "healthcare", "wellness", "competition",
+                 "kiro", "mimamori", "wellness companion", "ai-powered wellness",
+                 "wellness avatar", "health ai", "medical ai", "satya",
+                 "mindbridge", "fitlens", "vantedge", "preflight", "anukriti",
+                 "orpheus", "studybuddy", "renew", "nova", "serverless"]
+
+
+def detect_competition(post):
+    """Ensure is_competition flag is set on a post."""
+    if "is_competition" in post and post["is_competition"] is not None:
+        return post
+    title = (post.get("title") or "").lower()
+    post["is_competition"] = any(kw in title for kw in COMP_KEYWORDS)
+    return post
 
 
 def load_cached_data():
@@ -60,6 +79,8 @@ def load_cached_data():
         try:
             with open(JSON_PATH, "r", encoding="utf-8") as f:
                 posts = json.load(f)
+            # ALWAYS apply competition detection to cached data
+            posts = [detect_competition(p) for p in posts]
             mod_time = os.path.getmtime(JSON_PATH)
             return posts, datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
         except Exception:
@@ -67,8 +88,16 @@ def load_cached_data():
     return [], None
 
 
+def add_log(msg):
+    with data_lock:
+        scrape_data["scrape_log"].append(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
+        if len(scrape_data["scrape_log"]) > 20:
+            scrape_data["scrape_log"] = scrape_data["scrape_log"][-20:]
+    print(f"[SCRAPE] {msg}")
+
+
 def run_scraper():
-    """Run the scraper — called on-demand by Refresh button."""
+    """Run the scraper — called by auto-loop or manual button."""
     global scrape_data
     with data_lock:
         if scrape_data["is_scraping"]:
@@ -76,61 +105,82 @@ def run_scraper():
         scrape_data["is_scraping"] = True
         scrape_data["error"] = None
 
-    print(f"\n[SCRAPE] Starting at {datetime.now().strftime('%H:%M:%S')}...")
+    add_log("Starting scrape...")
     try:
         all_posts = []
-        session_token, cookies = get_session_token_selenium()
-        session = create_session(session_token, cookies)
 
+        # Step 1: Get session token
+        add_log("Launching Chrome to get session token...")
+        session_token, cookies = get_session_token_selenium()
+        add_log(f"Got session token: {session_token[:20]}..." if session_token else "No token found, using fallback")
+
+        # Step 2: Fetch posts via API
+        session = create_session(session_token, cookies)
         for content_type in CONTENT_TYPES:
+            add_log(f"Fetching '{content_type}' posts...")
             posts = fetch_all_posts(session, content_type)
             if posts:
                 all_posts.extend(posts)
+                add_log(f"  Got {len(posts)} {content_type} posts")
 
+        # Step 3: Fallback to direct scraping if API failed
         if not all_posts:
+            add_log("API returned no posts. Trying Selenium direct scrape...")
             selenium_posts = scrape_via_selenium_direct()
             all_posts.extend(selenium_posts)
+            add_log(f"Selenium fallback got {len(selenium_posts)} posts")
 
         if all_posts:
             sorted_posts = sorted(all_posts, key=lambda x: x.get("likes_count", 0), reverse=True)
             seen = set()
             unique = []
             for p in sorted_posts:
-                if p["id"] not in seen:
+                pid = p.get("id", "")
+                if pid and pid not in seen:
                     p["is_competition"] = is_competition_post(p)
                     p.pop("raw_item", None)
-                    seen.add(p["id"])
+                    seen.add(pid)
                     unique.append(p)
+
+            # Also apply broad keyword detection
+            unique = [detect_competition(p) for p in unique]
 
             try:
                 with open(JSON_PATH, "w", encoding="utf-8") as f:
                     json.dump(unique, f, indent=2, ensure_ascii=False)
-            except Exception:
-                pass
+            except Exception as e:
+                add_log(f"Warning: couldn't save JSON: {e}")
 
+            comp_count = sum(1 for p in unique if p.get("is_competition"))
             with data_lock:
                 scrape_data["posts"] = unique
                 scrape_data["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[SCRAPE] Done: {len(unique)} posts")
+                scrape_data["error"] = None
+            add_log(f"Done! {len(unique)} posts ({comp_count} competition). Top: {unique[0]['likes_count']} likes")
         else:
             with data_lock:
-                scrape_data["error"] = "No posts found"
-            print("[SCRAPE] Failed: no posts")
+                scrape_data["error"] = "Scraper returned no posts. The site might be temporarily unavailable."
+            add_log("Failed: no posts returned")
 
     except Exception as e:
+        err_msg = f"{type(e).__name__}: {str(e)}"
         with data_lock:
-            scrape_data["error"] = str(e)
-        print(f"[SCRAPE] Error: {e}")
+            scrape_data["error"] = err_msg
+        add_log(f"Error: {err_msg}")
+        traceback.print_exc()
     finally:
         with data_lock:
             scrape_data["is_scraping"] = False
 
 
 def auto_scrape_loop():
-    """Background loop: scrape every 5 minutes to keep data fresh."""
-    time.sleep(15)  # Initial delay to let server start
+    """Background loop: scrape every 5 minutes."""
+    time.sleep(10)
     while True:
-        run_scraper()
+        try:
+            run_scraper()
+        except Exception as e:
+            print(f"[AUTO-SCRAPE] Unexpected error: {e}")
         time.sleep(AUTO_SCRAPE_INTERVAL)
 
 
@@ -143,17 +193,20 @@ def index():
 @app.route("/api/data")
 def api_data():
     with data_lock:
-        posts = scrape_data["posts"]
+        posts = list(scrape_data["posts"])
         last_updated = scrape_data["last_updated"]
         is_scraping = scrape_data["is_scraping"]
         error = scrape_data["error"]
+        logs = list(scrape_data["scrape_log"][-10:])
+
+    # Ensure competition flags
+    posts = [detect_competition(p) for p in posts]
 
     total_likes = sum(p.get("likes_count", 0) for p in posts)
     avg_likes = total_likes / len(posts) if posts else 0
     max_likes = max((p.get("likes_count", 0) for p in posts), default=0)
 
     comp_posts = [p for p in posts if p.get("is_competition")]
-    comp_count = len(comp_posts)
 
     highlight_rank = None
     highlight_post = None
@@ -164,11 +217,21 @@ def api_data():
     for idx, post in enumerate(posts, 1):
         pid = post.get("id", "")
         puri = post.get("uri", "")
-        if HIGHLIGHT_POST_URI and (pid in HIGHLIGHT_POST_URI or (puri and puri in HIGHLIGHT_POST_URI)):
+        title_lc = (post.get("title") or "").lower()
+        is_hl = False
+        if HIGHLIGHT_POST_URI:
+            hl_lower = HIGHLIGHT_POST_URI.lower()
+            if pid and pid.lower() in hl_lower:
+                is_hl = True
+            elif puri and puri.lower() in hl_lower:
+                is_hl = True
+            elif "aideas" in title_lc and "transforming healthcare" in title_lc:
+                is_hl = True
+
+        if is_hl:
             highlight_rank = idx
             highlight_post = post
 
-            # Competition rank
             for ci, cp in enumerate(comp_posts, 1):
                 if cp.get("id") == pid:
                     highlight_comp_rank = ci
@@ -191,7 +254,7 @@ def api_data():
         "last_updated": last_updated,
         "is_scraping": is_scraping,
         "error": error,
-        "highlight_id": HIGHLIGHT_POST_URI,
+        "logs": logs,
         "highlight_rank": highlight_rank,
         "highlight_post": highlight_post,
         "highlight_comp_rank": highlight_comp_rank,
@@ -199,7 +262,7 @@ def api_data():
         "likes_to_climb": max(0, likes_to_climb) if highlight_rank and highlight_rank > 1 else 0,
         "stats": {
             "total_posts": len(posts),
-            "comp_posts": comp_count,
+            "comp_posts": len(comp_posts),
             "total_likes": total_likes,
             "avg_likes": round(avg_likes, 1),
             "max_likes": max_likes,
@@ -218,6 +281,16 @@ def api_refresh():
     return jsonify({"status": "started"})
 
 
+@app.route("/api/logs")
+def api_logs():
+    with data_lock:
+        return jsonify({
+            "logs": list(scrape_data["scrape_log"][-20:]),
+            "is_scraping": scrape_data["is_scraping"],
+            "error": scrape_data["error"],
+        })
+
+
 # ── Dashboard HTML ──
 DASHBOARD_HTML = r"""
 <!DOCTYPE html>
@@ -225,178 +298,194 @@ DASHBOARD_HTML = r"""
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AWS Builder Rankings — Live</title>
+    <title>AWS Builder Rankings — Live Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #060a14;
-            --bg-card: #111827;
-            --bg-card-alt: #1a2236;
+            --bg: #050a14;
+            --bg2: #0c1324;
+            --card: #111827;
+            --card2: #1a2236;
             --accent: #ff9900;
-            --accent-glow: rgba(255,153,0,0.35);
+            --accent2: #ffb84d;
+            --glow: rgba(255,153,0,0.3);
             --green: #10b981;
             --blue: #3b82f6;
             --red: #ef4444;
-            --text: #f3f4f6;
-            --text2: #9ca3af;
-            --text3: #6b7280;
+            --txt: #f3f4f6;
+            --txt2: #9ca3af;
+            --txt3: #6b7280;
             --border: #1f2937;
-            --r: 16px;
+            --r: 14px;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
-
-        /* Mesh BG */
-        .mesh { position:fixed; inset:0; z-index:-1; background:var(--bg);
+        body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--txt); min-height:100vh; line-height:1.5; }
+        .mesh { position:fixed; inset:0; z-index:-1;
+            background: var(--bg);
             background-image:
-                radial-gradient(at 20% 0%, rgba(255,153,0,0.06) 0, transparent 50%),
-                radial-gradient(at 80% 100%, rgba(59,130,246,0.04) 0, transparent 50%);
+                radial-gradient(at 15% 0%, rgba(255,153,0,0.07) 0, transparent 50%),
+                radial-gradient(at 85% 100%, rgba(59,130,246,0.05) 0, transparent 50%);
         }
+        .wrap { max-width:940px; margin:0 auto; padding:16px 14px 0; min-height:100vh; display:flex; flex-direction:column; }
 
-        .container { max-width:960px; margin:0 auto; padding:20px 16px 0; min-height:100vh; display:flex; flex-direction:column; }
+        /* Header */
+        .hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+        .hdr-left h1 { font-size:20px; font-weight:900; background:linear-gradient(135deg,#fff 20%,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .hdr-meta { display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap; }
+        .dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+        .meta-txt { font-size:10px; color:var(--txt3); font-weight:600; }
 
-        /* ── Header ── */
-        .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-        .header-left h1 { font-size:22px; font-weight:900; background:linear-gradient(135deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-        .header-meta { display:flex; align-items:center; gap:8px; margin-top:4px; }
-        .live-dot { width:7px; height:7px; background:var(--green); border-radius:50%; }
-        .update-txt { font-size:11px; color:var(--text3); font-weight:600; }
-
-        .refresh-btn {
-            background:var(--accent); color:#000; border:none; padding:10px 22px; border-radius:12px;
-            font-family:'Outfit',sans-serif; font-size:13px; font-weight:800; cursor:pointer;
-            display:flex; align-items:center; gap:8px;
-            box-shadow:0 4px 20px var(--accent-glow); transition:all .2s;
+        .ubtn {
+            background:linear-gradient(135deg, var(--accent), #e68a00); color:#000; border:none;
+            padding:9px 20px; border-radius:11px; font-family:'Outfit'; font-size:12px; font-weight:800;
+            cursor:pointer; display:flex; align-items:center; gap:7px;
+            box-shadow:0 4px 18px var(--glow); transition:all .2s;
         }
-        .refresh-btn:hover { transform:translateY(-1px); box-shadow:0 6px 25px var(--accent-glow); }
-        .refresh-btn:active { transform:scale(.97); }
-        .refresh-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
-        .spin { width:16px; height:16px; border:2px solid rgba(0,0,0,.2); border-top-color:#000; border-radius:50%; animation:spin .7s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg) } }
+        .ubtn:hover { transform:translateY(-1px); box-shadow:0 6px 24px var(--glow); }
+        .ubtn:active { transform:scale(.97); }
+        .ubtn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+        .spin { width:14px; height:14px; border:2px solid rgba(0,0,0,.2); border-top-color:#000; border-radius:50%; animation:sp .6s linear infinite; display:inline-block; }
+        @keyframes sp { to{transform:rotate(360deg)} }
 
-        /* ── Project Info ── */
-        .project-info {
-            background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border:1px solid var(--border); border-radius:var(--r); padding:16px 20px;
-            margin-bottom:16px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-        }
-        .project-icon { font-size:32px; }
-        .project-details { flex:1; min-width:200px; }
-        .project-name { font-size:16px; font-weight:800; color:#fff; }
-        .project-desc { font-size:12px; color:var(--text2); margin-top:2px; line-height:1.4; }
-        .project-author { font-size:11px; color:var(--text3); margin-top:4px; }
-        .project-author strong { color:var(--accent); }
+        /* Status Bar */
+        .status-bar { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin-bottom:14px; font-size:11px; display:flex; align-items:center; gap:8px; color:var(--txt2); }
+        .status-bar.error { border-color:var(--red); color:var(--red); }
+        .status-bar.scraping { border-color:var(--accent); color:var(--accent); }
 
-        /* ── Stats ── */
-        .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
-        @media(min-width:640px) { .stats { grid-template-columns:repeat(4,1fr); } }
-        .stat { background:var(--bg-card); border:1px solid var(--border); padding:14px; border-radius:var(--r); text-align:center; }
-        .stat-l { font-size:9px; color:var(--text3); text-transform:uppercase; font-weight:800; letter-spacing:.5px; }
-        .stat-v { font-size:22px; font-weight:800; margin-top:2px; }
+        /* Project Info */
+        .proj { background:linear-gradient(135deg,var(--card2),var(--card)); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; margin-bottom:14px; display:flex; align-items:center; gap:14px; }
+        .proj-icon { font-size:28px; }
+        .proj-body { flex:1; min-width:0; }
+        .proj-title { font-size:14px; font-weight:800; color:#fff; }
+        .proj-desc { font-size:11px; color:var(--txt2); margin-top:1px; line-height:1.3; }
+        .proj-auth { font-size:10px; color:var(--txt3); margin-top:3px; }
+        .proj-auth strong { color:var(--accent); font-weight:700; }
 
-        /* ── Highlight ── */
-        .hl { background:linear-gradient(145deg,#1e293b,#0f172a); border:2px solid var(--accent); border-radius:var(--r); padding:20px; margin-bottom:16px; box-shadow:0 0 40px var(--accent-glow); }
-        .hl-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-        .hl-badge { background:var(--accent); color:#000; padding:4px 12px; font-size:10px; font-weight:800; border-radius:8px; text-transform:uppercase; }
-        .hl-rank { font-size:52px; font-weight:900; color:var(--accent); line-height:1; }
-        .hl-title { font-size:17px; font-weight:700; color:#fff; margin-bottom:14px; }
-        .hl-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
-        .hl-s-l { display:block; font-size:9px; color:var(--text3); font-weight:800; text-transform:uppercase; }
-        .hl-s-v { font-size:18px; font-weight:800; color:#fff; }
-        .ctx { border-top:1px solid rgba(255,255,255,.08); padding-top:14px; }
-        .ctx-h { font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:8px; }
-        .ctx-row { display:flex; justify-content:space-between; align-items:center; font-size:12px; background:rgba(255,255,255,.03); padding:7px 12px; border-radius:8px; margin-bottom:5px; }
-        .ctx-row span:last-child { font-weight:800; color:var(--accent); }
-        .climb { background:rgba(16,185,129,.12); color:var(--green); padding:4px 10px; border-radius:6px; font-size:11px; font-weight:700; margin-top:6px; display:inline-block; }
+        /* Stats */
+        .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px; }
+        @media(min-width:600px) { .stats { grid-template-columns:repeat(5,1fr); } }
+        .st { background:var(--card); border:1px solid var(--border); padding:12px; border-radius:var(--r); text-align:center; }
+        .st-l { font-size:8px; color:var(--txt3); text-transform:uppercase; font-weight:800; letter-spacing:.6px; }
+        .st-v { font-size:20px; font-weight:800; margin-top:1px; }
 
-        /* ── Filters ── */
-        .filters { display:flex; gap:8px; margin-bottom:14px; }
-        .fbtn { background:var(--bg-card); border:1px solid var(--border); color:var(--text2); padding:7px 14px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'Outfit',sans-serif; }
-        .fbtn.active { background:var(--accent); color:#000; border-color:var(--accent); }
+        /* Highlight */
+        .hl { background:linear-gradient(145deg,#1a263d,#0f172a); border:2px solid var(--accent); border-radius:var(--r); padding:18px; margin-bottom:14px; box-shadow:0 0 35px var(--glow); position:relative; overflow:hidden; }
+        .hl::before { content:''; position:absolute; top:-50%; right:-20%; width:200px; height:200px; background:radial-gradient(circle,rgba(255,153,0,0.08),transparent 70%); pointer-events:none; }
+        .hl-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+        .hl-badge { background:var(--accent); color:#000; padding:3px 10px; font-size:9px; font-weight:800; border-radius:6px; text-transform:uppercase; letter-spacing:.5px; }
+        .hl-rank { font-size:48px; font-weight:900; color:var(--accent); line-height:1; text-shadow:0 0 30px var(--glow); }
+        .hl-title { font-size:15px; font-weight:700; color:#fff; margin-bottom:12px; }
+        .hl-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+        .hl-sl { display:block; font-size:8px; color:var(--txt3); font-weight:800; text-transform:uppercase; }
+        .hl-sv { font-size:17px; font-weight:800; color:#fff; }
+        .ctx { border-top:1px solid rgba(255,255,255,.06); padding-top:12px; }
+        .ctx-h { font-size:9px; font-weight:800; color:var(--accent); text-transform:uppercase; margin-bottom:6px; letter-spacing:.5px; }
+        .ctx-r { display:flex; justify-content:space-between; align-items:center; font-size:11px; background:rgba(255,255,255,.03); padding:6px 10px; border-radius:7px; margin-bottom:4px; }
+        .ctx-r span:last-child { font-weight:800; color:var(--accent); font-size:12px; }
+        .climb { background:rgba(16,185,129,.12); color:var(--green); padding:3px 9px; border-radius:5px; font-size:10px; font-weight:700; margin-top:5px; display:inline-block; }
 
-        /* ── List ── */
-        .item { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); padding:14px; display:flex; align-items:center; gap:14px; margin-bottom:8px; transition:border-color .2s; }
-        .item:hover { border-color:rgba(255,255,255,.12); }
-        .item.hl-item { border-color:var(--accent); background:rgba(255,153,0,.04); }
-        .i-rank { width:36px; font-size:18px; font-weight:900; color:var(--text3); text-align:center; flex-shrink:0; }
-        .i-body { flex:1; min-width:0; }
-        .i-title { font-size:13px; font-weight:700; color:var(--text); text-decoration:none; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .i-title:hover { color:var(--accent); }
-        .i-meta { font-size:10px; color:var(--text3); display:flex; gap:8px; margin-top:2px; }
-        .i-comp { color:var(--blue); font-weight:800; font-size:9px; text-transform:uppercase; }
-        .i-likes { text-align:right; flex-shrink:0; }
-        .i-likes-v { font-size:18px; font-weight:800; color:var(--accent); display:block; line-height:1; }
-        .i-likes-l { font-size:8px; color:var(--text3); text-transform:uppercase; font-weight:700; }
+        /* Filters */
+        .filters { display:flex; gap:6px; margin-bottom:12px; }
+        .fb { background:var(--card); border:1px solid var(--border); color:var(--txt2); padding:6px 13px; border-radius:9px; font-size:11px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'Outfit'; }
+        .fb.on { background:var(--accent); color:#000; border-color:var(--accent); }
 
-        /* ── Footer ── */
-        .footer { margin-top:auto; padding:24px 0 16px; border-top:1px solid var(--border); text-align:center; }
-        .footer-dev { font-size:12px; color:var(--text3); font-weight:600; margin-bottom:8px; }
-        .footer-dev a { color:var(--accent); text-decoration:none; font-weight:700; }
-        .footer-dev a:hover { text-decoration:underline; }
-        .footer-links { display:flex; justify-content:center; gap:16px; }
-        .footer-links a { color:var(--text3); text-decoration:none; font-size:11px; font-weight:600; transition:color .2s; display:flex; align-items:center; gap:4px; }
-        .footer-links a:hover { color:var(--accent); }
-        .footer-links svg { width:14px; height:14px; fill:currentColor; }
+        /* Rankings List */
+        .ri { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; display:flex; align-items:center; gap:12px; margin-bottom:7px; transition:border-color .2s; }
+        .ri:hover { border-color:rgba(255,255,255,.1); }
+        .ri.mine { border-color:var(--accent); background:rgba(255,153,0,.04); }
+        .ri-rank { width:32px; font-size:16px; font-weight:900; color:var(--txt3); text-align:center; flex-shrink:0; }
+        .ri-body { flex:1; min-width:0; }
+        .ri-t { font-size:12px; font-weight:700; color:var(--txt); text-decoration:none; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .ri-t:hover { color:var(--accent); }
+        .ri-meta { font-size:9px; color:var(--txt3); display:flex; gap:6px; margin-top:1px; align-items:center; }
+        .ri-comp { color:var(--blue); font-weight:800; font-size:8px; text-transform:uppercase; background:rgba(59,130,246,.1); padding:1px 5px; border-radius:4px; }
+        .ri-likes { text-align:right; flex-shrink:0; }
+        .ri-lv { font-size:16px; font-weight:800; color:var(--accent); display:block; line-height:1; }
+        .ri-ll { font-size:7px; color:var(--txt3); text-transform:uppercase; font-weight:700; }
 
-        /* ── Loading ── */
-        #overlay { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; gap:14px; }
-        .loader { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
+        /* Footer */
+        .footer { margin-top:auto; padding:20px 0 14px; border-top:1px solid var(--border); text-align:center; }
+        .footer-by { font-size:11px; color:var(--txt3); font-weight:600; margin-bottom:6px; }
+        .footer-by a { color:var(--accent); text-decoration:none; font-weight:700; }
+        .footer-by a:hover { text-decoration:underline; }
+        .f-links { display:flex; justify-content:center; gap:14px; }
+        .f-links a { color:var(--txt3); text-decoration:none; font-size:10px; font-weight:600; transition:color .2s; display:flex; align-items:center; gap:3px; }
+        .f-links a:hover { color:var(--accent); }
+        .f-links svg { width:13px; height:13px; fill:currentColor; }
+
+        /* Overlay */
+        #ov { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; gap:12px; }
+        .ld { width:28px; height:28px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:sp 1s linear infinite; }
+
+        /* Log panel */
+        .log-toggle { font-size:10px; color:var(--txt3); cursor:pointer; text-decoration:underline; margin-top:4px; }
+        .log-panel { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-top:6px; font-size:10px; color:var(--txt3); font-family:monospace; max-height:120px; overflow-y:auto; display:none; }
+        .log-panel.show { display:block; }
     </style>
 </head>
 <body>
     <div class="mesh"></div>
-    <div id="overlay"><div class="loader"></div><div style="font-size:13px;font-weight:700;color:var(--text2)">Loading Rankings...</div></div>
+    <div id="ov"><div class="ld"></div><div style="font-size:12px;font-weight:700;color:var(--txt2)">Loading Dashboard...</div></div>
 
-    <div class="container">
+    <div class="wrap">
         <!-- Header -->
-        <div class="header">
-            <div class="header-left">
+        <div class="hdr">
+            <div class="hdr-left">
                 <h1>AWS Builder Rankings</h1>
-                <div class="header-meta">
-                    <div class="live-dot"></div>
-                    <span class="update-txt" id="lastUpdated">Starting up...</span>
-                    <span class="update-txt" id="nextRefresh" style="margin-left:6px"></span>
+                <div class="hdr-meta">
+                    <div class="dot"></div>
+                    <span class="meta-txt" id="updTime">Starting up...</span>
+                    <span class="meta-txt" id="nextScrape"></span>
                 </div>
             </div>
-            <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()">
-                <span id="refreshText">&#x21bb; Update Now</span>
+            <button class="ubtn" id="ubtn" onclick="doRefresh()">
+                <span id="utext">&#x21bb; Update Now</span>
             </button>
         </div>
 
+        <!-- Status bar (shows scraper errors/status) -->
+        <div class="status-bar" id="statusBar" style="display:none"></div>
+
         <!-- Project Info -->
-        <div class="project-info">
-            <div class="project-icon">🏥</div>
-            <div class="project-details">
-                <div class="project-name">AIdeas: Transforming Healthcare into AI-Powered Wellness Companion</div>
-                <div class="project-desc">An AI-powered wellness platform leveraging AWS services to transform reactive healthcare into proactive, personalized wellness management.</div>
-                <div class="project-author">By <strong>Md. Shafayat Sadat Saad</strong> (@saad30) — AWS Builder Competition 2026</div>
+        <div class="proj">
+            <div class="proj-icon">🏥</div>
+            <div class="proj-body">
+                <div class="proj-title">AIdeas: Transforming Healthcare into AI-Powered Wellness Companion</div>
+                <div class="proj-desc">An AI-powered wellness platform leveraging AWS services for proactive, personalized healthcare.</div>
+                <div class="proj-auth">By <strong>Md. Shafayat Sadat Saad</strong> (@saad30) — AWS Builder Competition 2026</div>
             </div>
         </div>
 
         <!-- Stats -->
         <div class="stats">
-            <div class="stat"><div class="stat-l">Total Posts</div><div class="stat-v" id="sP">--</div></div>
-            <div class="stat"><div class="stat-l">Competition</div><div class="stat-v" id="sC">--</div></div>
-            <div class="stat"><div class="stat-l">Total Likes</div><div class="stat-v" id="sL">--</div></div>
-            <div class="stat"><div class="stat-l">Top Likes</div><div class="stat-v" id="sM">--</div></div>
+            <div class="st"><div class="st-l">Posts</div><div class="st-v" id="sP">--</div></div>
+            <div class="st"><div class="st-l">Competition</div><div class="st-v" id="sC">--</div></div>
+            <div class="st"><div class="st-l">Total Likes</div><div class="st-v" id="sL">--</div></div>
+            <div class="st"><div class="st-l">Top Likes</div><div class="st-v" id="sM">--</div></div>
+            <div class="st"><div class="st-l">Average</div><div class="st-v" id="sA">--</div></div>
         </div>
 
-        <!-- Highlight -->
+        <!-- Highlight Card -->
         <div id="hlBox"></div>
 
         <!-- Filters -->
         <div class="filters">
-            <button class="fbtn active" id="fAll" onclick="setF('all')">All Posts</button>
-            <button class="fbtn" id="fComp" onclick="setF('comp')">Competition</button>
+            <button class="fb on" id="fAll" onclick="setF('all')">All Posts</button>
+            <button class="fb" id="fComp" onclick="setF('comp')">Competition</button>
         </div>
 
-        <!-- Rankings -->
+        <!-- Rankings List -->
         <div id="list"></div>
+
+        <!-- Debug Log -->
+        <div class="log-toggle" id="logToggle" onclick="toggleLog()" style="display:none">Show scraper log</div>
+        <div class="log-panel" id="logPanel"></div>
 
         <!-- Footer -->
         <div class="footer">
-            <div class="footer-dev">Developed by <a href="https://shafayatsaad.vercel.app/" target="_blank">Shafayat Saad</a></div>
-            <div class="footer-links">
+            <div class="footer-by">Developed by <a href="https://shafayatsaad.vercel.app/" target="_blank">Shafayat Saad</a></div>
+            <div class="f-links">
                 <a href="https://www.linkedin.com/in/shafayatsaad/" target="_blank">
                     <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                     LinkedIn
@@ -415,57 +504,83 @@ DASHBOARD_HTML = r"""
 
     <script>
         let filter = 'all';
-        let data = null;
+        let D = null;
 
         function setF(f) {
             filter = f;
-            document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-            document.getElementById(f === 'all' ? 'fAll' : 'fComp').classList.add('active');
+            document.querySelectorAll('.fb').forEach(b => b.classList.remove('on'));
+            document.getElementById(f==='all'?'fAll':'fComp').classList.add('on');
             renderList();
+        }
+
+        function toggleLog() {
+            const p = document.getElementById('logPanel');
+            p.classList.toggle('show');
+            document.getElementById('logToggle').textContent = p.classList.contains('show') ? 'Hide scraper log' : 'Show scraper log';
         }
 
         async function loadData() {
             try {
                 const r = await fetch('/api/data');
-                data = await r.json();
-                document.getElementById('overlay').style.display = 'none';
+                D = await r.json();
+                document.getElementById('ov').style.display = 'none';
                 render();
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error('Load error:', e); }
         }
 
         function render() {
-            if (!data) return;
-            const { stats, highlight_post: hp, highlight_rank: hr, highlight_comp_rank: hcr, nearby_posts: nb, likes_to_climb: lc, posts } = data;
+            if (!D) return;
+            const { stats:s, highlight_post:hp, highlight_rank:hr, highlight_comp_rank:hcr, nearby_posts:nb, likes_to_climb:lc, posts, error, is_scraping, logs } = D;
 
             // Stats
-            document.getElementById('sP').textContent = stats.total_posts;
-            document.getElementById('sC').textContent = stats.comp_posts;
-            document.getElementById('sL').textContent = stats.total_likes;
-            document.getElementById('sM').textContent = stats.max_likes;
+            document.getElementById('sP').textContent = s.total_posts;
+            document.getElementById('sC').textContent = s.comp_posts;
+            document.getElementById('sL').textContent = s.total_likes;
+            document.getElementById('sM').textContent = s.max_likes;
+            document.getElementById('sA').textContent = s.avg_likes;
 
-            // Updated time
-            if (data.last_updated) {
-                const t = data.last_updated.split(' ')[1] || data.last_updated;
-                document.getElementById('lastUpdated').textContent = `Last scraped: ${t}`;
+            // Update time
+            if (D.last_updated) {
+                document.getElementById('updTime').textContent = 'Last scraped: ' + D.last_updated;
             }
 
-            // Highlight card
+            // Status bar
+            const sb = document.getElementById('statusBar');
+            if (is_scraping) {
+                sb.style.display = 'flex';
+                sb.className = 'status-bar scraping';
+                sb.innerHTML = '<div class="spin"></div> Scraping builder.aws.com...';
+            } else if (error) {
+                sb.style.display = 'flex';
+                sb.className = 'status-bar error';
+                sb.textContent = '⚠ ' + error;
+            } else {
+                sb.style.display = 'none';
+            }
+
+            // Logs
+            if (logs && logs.length > 0) {
+                document.getElementById('logToggle').style.display = 'block';
+                document.getElementById('logPanel').innerHTML = logs.map(l => `<div>${l}</div>`).join('');
+            }
+
+            // Highlight
             const box = document.getElementById('hlBox');
             if (hp && hr) {
                 const pct = ((hr / posts.length) * 100).toFixed(1);
                 let ctxHTML = '';
                 if (nb && nb.length > 0) {
                     ctxHTML = `<div class="ctx"><div class="ctx-h">Rank Neighborhood</div>${nb.map(n =>
-                        `<div class="ctx-row"><span>#${n.rank} ${n.title.length > 32 ? n.title.substring(0,29)+'...' : n.title}</span><span>${n.likes_count} likes</span></div>`
-                    ).join('')}${lc > 0 ? `<div class="climb">🚀 ${lc} more like${lc>1?'s':''} to climb to #${hr-1}!</div>` : ''}</div>`;
+                        `<div class="ctx-r"><span>#${n.rank} ${(n.title||'').length>30?(n.title||'').substring(0,27)+'...':n.title||''}</span><span>${n.likes_count} likes</span></div>`
+                    ).join('')}${lc > 0 ? `<div class="climb">🚀 ${lc} more like${lc>1?'s':''} to reach #${hr-1}</div>` : ''}</div>`;
                 }
                 box.innerHTML = `<div class="hl">
                     <div class="hl-top"><div class="hl-badge">Your Post</div><div class="hl-rank">#${hr}</div></div>
                     <div class="hl-title">${hp.title}</div>
-                    <div class="hl-stats">
-                        <div><span class="hl-s-l">Likes</span><span class="hl-s-v">${hp.likes_count}</span></div>
-                        <div><span class="hl-s-l">Overall</span><span class="hl-s-v">Top ${pct}%</span></div>
-                        <div><span class="hl-s-l">Comp Rank</span><span class="hl-s-v">#${hcr || '?'}/${stats.comp_posts}</span></div>
+                    <div class="hl-row">
+                        <div><span class="hl-sl">Likes</span><span class="hl-sv">${hp.likes_count}</span></div>
+                        <div><span class="hl-sl">Overall</span><span class="hl-sv">Top ${pct}%</span></div>
+                        <div><span class="hl-sl">Comp Rank</span><span class="hl-sv">#${hcr||'?'}/${s.comp_posts}</span></div>
                     </div>${ctxHTML}</div>`;
             }
 
@@ -473,72 +588,87 @@ DASHBOARD_HTML = r"""
         }
 
         function renderList() {
-            if (!data) return;
-            const posts = data.posts;
-            const filtered = filter === 'all' ? posts : posts.filter(p => p.is_competition);
-            const hp = data.highlight_post;
+            if (!D) return;
+            const posts = D.posts;
+            const hp = D.highlight_post;
+            const items = filter === 'all' ? posts : posts.filter(p => p.is_competition);
 
-            document.getElementById('list').innerHTML = filtered.length === 0
-                ? '<div style="text-align:center;padding:30px;color:var(--text3)">No posts found.</div>'
-                : filtered.map(p => {
-                    const r = posts.indexOf(p) + 1;
-                    const isHL = hp && p.id === hp.id;
-                    const medal = r===1?'🥇':r===2?'🥈':r===3?'🥉':r;
-                    return `<div class="item ${isHL?'hl-item':''}">
-                        <div class="i-rank" ${r<=3?'style="color:#fff"':''}>${medal}</div>
-                        <div class="i-body">
-                            <a href="${p.url||'#'}" target="_blank" class="i-title">${p.title}</a>
-                            <div class="i-meta">
-                                <span>@${p.author_alias||'?'}</span>
-                                <span>${p.author_name&&p.author_name!=='N/A'?p.author_name:''}</span>
-                                ${p.is_competition?'<span class="i-comp">Competition</span>':''}
-                            </div>
+            if (items.length === 0) {
+                document.getElementById('list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt3);font-size:13px">No posts found for this filter.</div>';
+                return;
+            }
+
+            document.getElementById('list').innerHTML = items.map(p => {
+                const r = posts.indexOf(p) + 1;
+                const isMe = hp && p.id === hp.id;
+                const medal = r===1?'🥇':r===2?'🥈':r===3?'🥉':r;
+                const author = [p.author_alias ? '@'+p.author_alias : '', p.author_name && p.author_name !== 'N/A' ? p.author_name : ''].filter(Boolean).join(' · ');
+                return `<div class="ri ${isMe?'mine':''}">
+                    <div class="ri-rank" ${r<=3?'style="color:#fff;font-size:18px"':''}>${medal}</div>
+                    <div class="ri-body">
+                        <a href="${p.url||'#'}" target="_blank" class="ri-t">${p.title||'Untitled'}</a>
+                        <div class="ri-meta">
+                            <span>${author}</span>
+                            ${p.is_competition?'<span class="ri-comp">Competition</span>':''}
                         </div>
-                        <div class="i-likes"><span class="i-likes-v">${p.likes_count}</span><span class="i-likes-l">Likes</span></div>
-                    </div>`;
-                }).join('');
+                    </div>
+                    <div class="ri-likes"><span class="ri-lv">${p.likes_count}</span><span class="ri-ll">likes</span></div>
+                </div>`;
+            }).join('');
         }
 
         async function doRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            const txt = document.getElementById('refreshText');
+            const btn = document.getElementById('ubtn');
+            const txt = document.getElementById('utext');
             btn.disabled = true;
             txt.innerHTML = '<div class="spin"></div> Scraping...';
 
             try {
-                await fetch('/api/refresh', { method: 'POST' });
-                // Poll until done
+                const res = await fetch('/api/refresh', { method:'POST' });
+                const r = await res.json();
+
+                // Poll until scrape completes
                 let tries = 0;
                 const poll = setInterval(async () => {
                     tries++;
-                    const r = await fetch('/api/data');
-                    const d = await r.json();
-                    if (!d.is_scraping || tries > 60) {
-                        clearInterval(poll);
-                        data = d;
+                    try {
+                        const dr = await fetch('/api/data');
+                        const dd = await dr.json();
+                        D = dd;
                         render();
-                        btn.disabled = false;
-                        txt.innerHTML = '&#x21bb; Update Now';
+
+                        if (!dd.is_scraping || tries > 90) {
+                            clearInterval(poll);
+                            btn.disabled = false;
+                            txt.innerHTML = dd.error
+                                ? '⚠ Retry'
+                                : '&#x21bb; Update Now';
+                        }
+                    } catch(e) {
+                        if (tries > 90) {
+                            clearInterval(poll);
+                            btn.disabled = false;
+                            txt.innerHTML = '&#x21bb; Update Now';
+                        }
                     }
-                }, 3000);
+                }, 2000);
             } catch(e) {
                 btn.disabled = false;
                 txt.innerHTML = '&#x21bb; Update Now';
             }
         }
 
-        // Auto-refresh UI data every 30s (reads from server which auto-scrapes every 5 min)
-        let countdown = 300;
+        // Countdown to next auto-scrape
+        let cd = 300;
         setInterval(() => {
-            countdown--;
-            if (countdown <= 0) countdown = 300;
-            const m = Math.floor(countdown / 60);
-            const s = countdown % 60;
-            const el = document.getElementById('nextRefresh');
-            if (el) el.textContent = `· Next auto-scrape in ${m}:${s.toString().padStart(2,'0')}`;
+            cd--;
+            if (cd <= 0) cd = 300;
+            const m = Math.floor(cd/60), s = cd%60;
+            const el = document.getElementById('nextScrape');
+            if (el) el.textContent = `· Auto-scrape in ${m}:${s.toString().padStart(2,'0')}`;
         }, 1000);
 
-        // Refresh UI data every 30 seconds
+        // Refresh UI every 30s
         setInterval(loadData, 30000);
         loadData();
     </script>
@@ -552,7 +682,6 @@ if cached_posts:
     scrape_data["posts"] = cached_posts
     scrape_data["last_updated"] = cached_time
 
-# Start auto-scrape thread (works with both gunicorn and local)
 _scrape_thread = threading.Thread(target=auto_scrape_loop, daemon=True)
 _scrape_thread.start()
 
