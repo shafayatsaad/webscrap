@@ -1,8 +1,8 @@
 rank,id,title,content_type,likes_count,comments_count,created_at,last_published_at,author_alias,author_name,url
 1,/content/39r5tBjE41RulwEbwsRvb0hRf87,AIdeas: AuraTwin  AI Infrastructure Safety from Your Phone,ARTICLE,204,82,2026-02-19 11:11:14,2026-02-18 23:28:28,ayushdevx,Ayush Upadhyay,https://builder.aws.com
-2,/content/3A05mRhLyFXg9xFzukWQj4AOvXX,AIdeas: MindBridge AI,ARTICLE,62,11,2026-02-21 23:49:08,2026-02-21 23:34:07,sushmagurunule,Sushma Gurunule,https://builder.aws.com
-3,/content/3AAMRb7lRzAJnleldfYBBtfM1WG,AIdeas: Transforming Healthcare into AI powered Wellness Companion,ARTICLE,61,47,2026-02-26 08:26:20,2026-02-25 23:37:00,saad30,Md. Shafayat Sadat Saad,https://builder.aws.com
-4,/content/3A22NGhiEao2qxdd2Np4qCzahUV,AIdeas: Project Anukriti,ARTICLE,49,54,2026-02-24 15:43:26,2026-02-23 16:33:41,abhimanyurb,Abhimanyu,https://builder.aws.com
+2,/content/3AAMRb7lRzAJnleldfYBBtfM1WG,AIdeas: Transforming Healthcare into AI powered Wellness Companion,ARTICLE,62,47,2026-02-26 08:26:20,2026-02-25 23:37:00,saad30,Md. Shafayat Sadat Saad,https://builder.aws.com
+3,/content/3A05mRhLyFXg9xFzukWQj4AOvXX,AIdeas: MindBridge AI,ARTICLE,62,11,2026-02-21 23:49:08,2026-02-21 23:34:07,sushmagurunule,Sushma Gurunule,https://builder.aws.com
+4,/content/3A22NGhiEao2qxdd2Np4qCzahUV,AIdeas: Project Anukriti,ARTICLE,50,55,2026-02-24 15:43:26,2026-02-23 16:33:41,abhimanyurb,Abhimanyu,https://builder.aws.com
 5,/content/39y1rMeWpghIsMiccdJWJOezgGj,AIdeas: Satya,ARTICLE,48,25,2026-02-22 12:39:43,2026-02-21 06:04:22,theharshitkalla,Harshit Kalla,https://builder.aws.com
 6,/content/39hDgbnVoDjOhrR9yek4LyCuAPM,AIdeas: No AI Edits to Your Image Without Consent,ARTICLE,38,49,2026-02-26 06:46:30,2026-02-23 05:15:01,samueljesse,Samuel Jesse,https://builder.aws.com
 7,/content/39xvRUpRtVYsLd7Un1u85iDhzWA,AIdeas: SecureFlow AI – Shifting Security Left with AI-Powered DevSecOps,ARTICLE,35,49,2026-02-23 20:44:44,2026-02-21 05:54:20,regulargeek,Crownstack Technologies,https://builder.aws.com
@@ -16,5 +16,5 @@ rank,id,title,content_type,likes_count,comments_count,created_at,last_published_
 15,/content/3A4BaBRBoTOUkWUv4llieDcK1Gg,AIdeas: Unideploy CloudOps CLI,ARTICLE,10,10,2026-02-23 10:20:23,2026-02-23 12:34:09,suryag766,SURYANSH GUPTA,https://builder.aws.com
 16,/content/3AAum3PluqFcecRAciSVEYiJZdu,Testera – Adaptive Test Prep,ARTICLE,4,1,2026-02-26 00:25:22,2026-02-25 20:39:37,anyaaqta,4nY4_,https://builder.aws.com
 17,/content/3ACCSONu0NtMBhhWZfsgBKO8VR0,AIdeas: Factant,ARTICLE,3,0,2026-02-26 06:44:13,2026-02-26 06:42:05,mikelane,Mike Lane,https://builder.aws.com
-18,/content/39x0FkP9ZD2yFMEY85MjQJS2OKq,"AIdeas: Pennytech SchoolOS | Our North Star is to empower 50,000 learners by 2027. Let’s build!",ARTICLE,1,0,2026-02-20 21:18:32,2026-02-26 14:32:41,violette,Violette Naa Adoley Allotey,https://builder.aws.com
-19,/content/3ABR9suLqQKaASR1RaDyAqwvEKi,AIdeas: Zero Incident,ARTICLE,1,0,2026-02-26 10:30:26,2026-02-26 10:17:04,nimit708,Nimit Sharma,https://builder.aws.com
+18,/content/39x0FkP9ZD2yFMEY85MjQJS2OKq,"AIdeas: Pennytech SchoolOS | Our North Star is to empower 50,000 learners by 2027. Let’s build!",ARTICLE,2,0,2026-02-20 21:18:32,2026-02-26 14:32:41,violette,Violette Naa Adoley Allotey,https://builder.aws.com
+19,/content/3ACldUr5Si9Z7mofiOIvebkHZvq,Dear Human #0: How We Got Here,ARTICLE,2,0,2026-02-26 11:15:20,2026-02-26 12:59:55,fclanet,Florian Clanet,https://builder.aws.com
