@@ -99,11 +99,10 @@ def make_driver():
     o.add_argument("--disable-sync")
     o.add_argument("--disable-translate")
     o.add_argument("--no-first-run")
-    o.add_argument("--single-process")  # critical for low-memory Docker
     o.add_argument("--disable-features=VizDisplayCompositor")
     o.add_argument("--blink-settings=imagesEnabled=false")
     o.add_argument("--window-size=1280,720")
-    o.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36")
+    o.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     o.set_capability("goog:loggingPrefs", {"performance": "ALL"})
     d = webdriver.Chrome(options=o)
     d.set_page_load_timeout(20)
