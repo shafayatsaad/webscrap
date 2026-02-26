@@ -191,16 +191,14 @@ def scrape_once():
                 driver.execute_script("window.scrollBy(0, window.innerHeight * 0.6);")
                 time.sleep(0.8)
                 
-                # Check for Load More buttons
-                try:
-                    btns = driver.find_elements("xpath", "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]")
-                    if btns:
-                        driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btns[0])
-                        time.sleep(0.5)
-                        driver.execute_script("arguments[0].click();", btns[0])
-                        time.sleep(1.5)
-                except Exception:
-                    pass
+                # Force-click 'Load more' via pure JavaScript to bypass cookie banners
+                js_click = """
+                Array.from(document.querySelectorAll('button'))
+                     .filter(b => b.textContent.toLowerCase().includes('load more'))
+                     .forEach(b => b.click());
+                """
+                driver.execute_script(js_click)
+                time.sleep(1.0)
 
                 new_h = driver.execute_script("return document.body.scrollHeight")
                 scroll_pos = driver.execute_script("return window.scrollY + window.innerHeight")
