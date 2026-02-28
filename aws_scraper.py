@@ -197,6 +197,32 @@ def format_timestamp(ts):
         return str(ts)
 
 
+def extract_region(item):
+    """Extract AWS region (EMEA, NAMER, APJC, LATAM, GCR, ANZ) from post metadata."""
+    regions = ["EMEA", "NAMER", "APJC", "LATAM", "GCR", "ANZ"]
+    
+    # Text sources to search
+    text_sources = [
+        item.get("title", ""),
+        item.get("spaceName", "") or "",
+    ]
+    
+    # Article specific data
+    article_data = item.get("contentTypeSpecificResponse", {}).get("article", {})
+    text_sources.append(article_data.get("markdownDescription", ""))
+    text_sources.extend(article_data.get("tags", []))
+    
+    combined_text = " ".join([str(t) for t in text_sources]).upper()
+    
+    # Search for region keywords
+    for r in regions:
+        # Check for both #REGION and REGION in the text
+        if f"#{r}" in combined_text or r in combined_text:
+            return r
+            
+    return "Global"
+
+
 def fetch_all_posts(session, content_type):
     """Fetch all posts from the competition timeframe (Feb 11 onwards)."""
     all_posts = []
@@ -249,7 +275,7 @@ def fetch_all_posts(session, content_type):
             likes = item.get("likesCount", 0)
             velocity = round(likes / days_since, 2)
 
-            post_data = {
+             post_data = {
                 "id": content_id,
                 "content_id": content_id,
                 "title": item.get("title", "Untitled"),
@@ -257,6 +283,8 @@ def fetch_all_posts(session, content_type):
                 "likes_count": likes,
                 "comments_count": item.get("commentsCount", 0),
                 "views_count": item.get("viewsCount") if "viewsCount" in item else None,
+                "velocity": velocity,
+                "region": extract_region(item),
                 "velocity": velocity,
                 "created_at": format_timestamp(item.get("createdAt")),
                 "created_ts": created_ts,
