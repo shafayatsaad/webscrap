@@ -431,6 +431,13 @@
             const topPost = compPosts[0];
             const topForecasted = Math.round(topPost.likes_count + (topPost.velocity * daysLeft));
             
+            // Tier 1 Pace: Average of the Top 3 competition entries
+            const top3Posts = compPosts.slice(0, 3);
+            const top3AvgVelo = top3Posts.reduce((s, p) => s + (p.velocity || 0), 0) / Math.max(1, top3Posts.length);
+            const paceStatus = me.velocity >= top3AvgVelo ? 
+                { lbl: "ELITE PACE", color: "var(--green)" } : 
+                { lbl: "BEHIND PACE", color: "var(--accent)" };
+            
             // Safe Win Buffer Calculation
             // We want to be at least 10 likes or 5% (whichever is higher) ahead of the top competitor's forecast
             const safetyMargin = Math.max(10, Math.round(topForecasted * 0.05));
@@ -466,20 +473,27 @@
                         </div>
                         <div class="comp-comparison">
                             <div class="comp-row">
+                                <span class="comp-lbl">📈 Top 3 Avg Pace</span>
+                                <span class="comp-val" style="color:${paceStatus.color}">${top3AvgVelo.toFixed(1)} v/d</span>
+                            </div>
+                            <div class="comp-row">
                                 <span class="comp-lbl">🔭 Forecasted Final</span>
                                 <span class="comp-val">~${forecasted} LIKES</span>
                             </div>
                             <div class="comp-row">
-                                <span class="comp-lbl">🛡️ Safe-Win Buffer</span>
-                                <span class="comp-val" style="color:var(--green)">+${safeBufferNeeded} LIKES NEEDED</span>
+                                <span class="comp-lbl">🛡️ Safe-Win Target</span>
+                                <span class="comp-val" style="color:var(--green)">+${safeBufferNeeded} LIKES</span>
                             </div>
                             <div class="comp-row">
                                 <span class="comp-lbl">🔥 Win Probability</span>
                                 <span class="comp-val" style="color:${winProb > 75 ? 'var(--green)' : 'var(--accent)'}">${winProb}%</span>
                             </div>
-                            <div class="climb-tip">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="m13 17 5-5-5-5"></path><path d="M6 17 11 12 6 7"></path></svg>
-                                <span>Add <strong>${dailySafeAdd} likes/day</strong> to guarantee #1 by Mar 13</span>
+                            <div class="climb-tip" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                                <div style="font-size: 10px; font-weight: 800; color: ${paceStatus.color}; margin-bottom: 4px;">${paceStatus.lbl}</div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="m13 17 5-5-5-5"></path><path d="M6 17 11 12 6 7"></path></svg>
+                                    <span style="font-size: 11px;">Target <strong>${dailySafeAdd} likes/day</strong> to guarantee #1</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -534,7 +548,7 @@
                         <div class="item-content">
                             <span class="item-title" style="display:flex; align-items:center, gap:8px">
                                 ${p.title}
-                                <span class="tag-region" style="background:var(--accent); color:#000; font-weight:800; font-size:10px; padding:2px 6px; border-radius:4px">${region}</span>
+                                <span class="tag-region" style="background:var(--accent); color:#000; font-weight:900; font-size:10px; padding:3px 7px; border-radius:4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2)">${region}</span>
                             </span>
                             <div class="item-sub">
                                 <span style="font-weight:700; color:var(--text-dim)">${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
