@@ -32,4 +32,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Run gunicorn when the container launches
-CMD ["gunicorn", "dashboard:app", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120"]
+CMD ["gunicorn", "dashboard:app", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "120"]
