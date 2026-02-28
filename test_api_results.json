@@ -1,0 +1,62 @@
+{
+  "requests": [
+    {
+      "url": "https://api.builder.aws.com/cs/content/feed",
+      "method": "POST",
+      "postData": "{\"contentType\":\"ARTICLE\",\"sort\":{\"article\":{\"sortOrder\":\"TRENDING_SCORE\"}}}",
+      "headers": {
+        "Referer": "https://builder.aws.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+        "amz-sdk-invocation-id": "76bfa214-5b3e-46b0-9e28-f7f876d8943f",
+        "amz-sdk-request": "attempt=1; max=3",
+        "builder-session-token": "dummy",
+        "content-type": "application/json",
+        "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "x-amz-user-agent": "aws-sdk-js/1.0.0 ua/2.1 os/Windows lang/js md/browser#Chromium_145 api/bingocontent#1.0.0 m/N,E"
+      },
+      "requestId": "23756.91"
+    }
+  ],
+  "responses": [
+    {
+      "url": "https://api.builder.aws.com/cs/content/feed",
+      "error": "Message: unknown error: unhandled inspector error: {\"code\":-32000,\"message\":\"No resource with given identifier found\"}\n  (Session info: chrome=145.0.7632.117)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x7ff77cabaa55\n\t0x7ff77c818630\n\t0x7ff77c5ad75d\n\t0x7ff77c599623\n\t0x7ff77c597eff\n\t0x7ff77c59862f\n\t0x7ff77c598570\n\t0x7ff77c5b28a5\n\t0x7ff77c6649ee\n\t0x7ff77c6319da\n\t0x7ff77c65591c\n\t0x7ff77c5f9098\n\t0x7ff77c5f9f83\n\t0x7ff77cae7810\n\t0x7ff77cae1afd\n\t0x7ff77cb02c1a\n\t0x7ff77c833345\n\t0x7ff77c83b81c\n\t0x7ff77c821924\n\t0x7ff77c821ad6\n\t0x7ff77c807e47\n\t0x7ffbadc5e8d7\n\t0x7ffbaf36c48c\n"
+    },
+    {
+      "url": "https://api.builder.aws.com/cs/content/feed",
+      "items_count": 10,
+      "has_next_token": true,
+      "next_token_preview": "eyJpZCI6IjNBSG9hbTdrbzRVYkNQcW9weU13dG4yV25OZSIsIm",
+      "first_item": {
+        "author": {
+          "alias": "adityarokade90",
+          "creatorId": "0398a8bc-73a5-422c-9f48-72b34644b110",
+          "isAmazonEmployee": false,
+          "preferredName": "Aditya Rokade"
+        },
+        "commentsCount": 8,
+        "contentId": "/content/3AHjLzkE2LSQhq4wrQXR7O9mBbW",
+        "contentType": "ARTICLE",
+        "contentTypeSpecificResponse": {
+          "article": {
+            "description": "Devsparks",
+            "heroImageUrl": "",
+            "tags": [],
+            "versionId": "3AHjM0mqEnG76X2SAM2qTTL2Qar"
+          }
+        },
+        "createdAt": 1772256337905,
+        "isLiked": false,
+        "lastModifiedAt": 1772256410503,
+        "lastPublishedAt": 1772256410441,
+        "likesCount": 37,
+        "locale": "en",
+        "markdownDescription": "Attending DevSparks",
+        "status": "live",
+        "title": "Devsparks"
+      }
+    }
+  ]
+}
