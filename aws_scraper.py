@@ -275,7 +275,7 @@ def fetch_all_posts(session, content_type):
             likes = item.get("likesCount", 0)
             velocity = round(likes / days_since, 2)
 
-             post_data = {
+            post_data = {
                 "id": content_id,
                 "content_id": content_id,
                 "title": item.get("title", "Untitled"),
@@ -285,7 +285,6 @@ def fetch_all_posts(session, content_type):
                 "views_count": item.get("viewsCount") if "viewsCount" in item else None,
                 "velocity": velocity,
                 "region": extract_region(item),
-                "velocity": velocity,
                 "created_at": format_timestamp(item.get("createdAt")),
                 "created_ts": created_ts,
                 "last_published_at": format_timestamp(item.get("lastPublishedAt")),
