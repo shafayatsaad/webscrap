@@ -183,15 +183,18 @@ def fetch_feed_page(session, content_type, next_token=None):
         return None
 
 
+from datetime import datetime, timezone
+
 def format_timestamp(ts):
-    """Convert epoch timestamp (seconds or ms) to readable date string."""
+    """Convert epoch timestamp (seconds or ms) to UTC ISO 8601 string."""
     if ts is None:
         return "N/A"
     try:
         if isinstance(ts, (int, float)):
             if ts > 1e12:
                 ts = ts / 1000
-            return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+            # Use timezone-aware UTC datetime
+            return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
         return str(ts)
     except (ValueError, OSError):
         return str(ts)
@@ -436,6 +439,9 @@ def save_results(sorted_posts):
     if not sorted_posts:
         return
 
+    # Use current UTC time for metadata
+    scraped_at_iso = format_timestamp(datetime.now().timestamp())
+
     # Save CSV
     csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), OUTPUT_CSV)
     try:
@@ -472,8 +478,13 @@ def save_results(sorted_posts):
             clean = {k: v for k, v in p.items() if k != "raw_item"}
             clean_posts.append(clean)
 
+        output_data = {
+            "scraped_at": scraped_at_iso,
+            "posts": clean_posts
+        }
+
         with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(clean_posts, f, indent=2, ensure_ascii=False)
+            json.dump(output_data, f, indent=2, ensure_ascii=False)
         print_success(f"JSON saved to: {json_path}")
     except Exception as e:
         print_error(f"Failed to save JSON: {e}")
