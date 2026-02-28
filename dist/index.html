@@ -341,6 +341,12 @@
             const now = new Date();
             document.getElementById('statUpdate').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
+            // Deadline Timer
+            const diff = COMPETITION_END - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('deadline-timer').textContent = `${days}D ${hours}H REMAINING`;
+
             // Sidebar
             document.getElementById('sideCompN').textContent = compItems.length;
             document.getElementById('sideCompAvg').textContent = (compLikes / Math.max(1, compItems.length)).toFixed(1);
@@ -351,12 +357,11 @@
             document.getElementById('sideStatAuth').textContent = new Set(allData.map(p => p.author_alias)).size;
             document.getElementById('sideStatVelo').textContent = avgVelo.toFixed(2);
 
-            // Velocity Sidebar
             const topVelo = [...allData].sort((a,b) => b.velocity - a.velocity).slice(0, 5);
             document.getElementById('velocityList').innerHTML = topVelo.map(p => `
                 <div class="side-row">
-                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">${p.title}</span>
-                    <span style="color:var(--green)">+${p.velocity}</span>
+                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-weight:600">${p.title}</span>
+                    <span style="color:var(--green); font-weight:800">+${p.velocity}</span>
                 </div>
             `).join('');
         }
@@ -368,18 +373,29 @@
             const me = allData[meIndex];
             const globalRank = meIndex + 1;
             
-            const compPosts = allData.filter(p => p.is_competition);
+            const compPosts = allData.filter(p => (p.is_competition || p.id.includes(HIGHLIGHT_ID)));
             const compRank = compPosts.findIndex(p => p.id && p.id.includes(HIGHLIGHT_ID)) + 1;
 
-            const above = meIndex > 0 ? allData[meIndex - 1] : null;
-            const climb = above ? (above.likes_count - me.likes_count) + 1 : 0;
-
             // Prediction logic
-            const daysLeft = Math.max(1, (COMPETITION_END - new Date()) / 86400000);
+            const now = new Date();
+            const daysLeft = Math.max(0.1, (COMPETITION_END - now) / 86400000);
+            
             const forecasted = Math.round(me.likes_count + (me.velocity * daysLeft));
             const topPost = compPosts[0];
             const topForecasted = Math.round(topPost.likes_count + (topPost.velocity * daysLeft));
-            const winProb = Math.min(95, Math.round((me.velocity / (topPost.velocity || 1)) * 50 + (me.likes_count / topPost.likes_count) * 40));
+            
+            // Scaled Win Probability
+            let winProb = 0;
+            if (compRank === 1) {
+                winProb = me.velocity >= topPost.velocity ? 98 : 85;
+            } else {
+                const veloRatio = me.velocity / (topPost.velocity || 1);
+                const scoreRatio = me.likes_count / topPost.likes_count;
+                winProb = Math.round((veloRatio * 60) + (scoreRatio * 30));
+            }
+            winProb = Math.min(99, Math.max(5, winProb));
+
+            const targetVelo = ((topForecasted - me.likes_count) / daysLeft).toFixed(1);
 
             const container = document.getElementById('meCardContainer');
             container.innerHTML = `
@@ -392,8 +408,12 @@
                             </div>
                             <div class="rank-info">
                                 <h2>${me.title}</h2>
-                                <p>Engagement Velocity: <strong style="color:var(--green)">${me.velocity || 0} likes/day</strong></p>
-                                <p style="margin-top:6px; font-size:12px; opacity:0.7">Region: <span class="tag-region">${me.region || 'Global'}</span> &middot; Created: ${me.created_at}</p>
+                                <p>Current Speed: <strong style="color:var(--green)">${me.velocity || 0} likes/day</strong></p>
+                                <p style="margin-top:8px; font-size:12px; opacity:0.8; display:flex; gap:8px; align-items:center">
+                                    <span class="tag-region">${me.region || 'Global'}</span>
+                                    <span>&middot;</span>
+                                    <span>ID: ${me.id.substring(0,8)}</span>
+                                </p>
                             </div>
                         </div>
                         <div class="comp-comparison">
@@ -402,19 +422,19 @@
                                 <span class="comp-val">#${compRank} OF ${compPosts.length}</span>
                             </div>
                             <div class="comp-row">
-                                <span class="comp-lbl">🔭 Forecasted Growth</span>
+                                <span class="comp-lbl">🔭 March 13 Forecast</span>
                                 <span class="comp-val">~${forecasted} LIKES</span>
                             </div>
                             <div class="comp-row">
                                 <span class="comp-lbl">🔥 Win Probability</span>
-                                <span class="comp-val">${winProb}% / 100%</span>
+                                <span class="comp-val" style="color:${winProb > 70 ? 'var(--green)' : winProb > 40 ? 'var(--accent)' : 'var(--purple)'}">${winProb}%</span>
                             </div>
                             ${compRank > 1 ? `
                             <div class="climb-tip">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m14 9-5 5 5 5"></path><path d="M4 14h6"></path><path d="M10 14h6"></path></svg>
-                                Target Velocity: ${((topForecasted - me.likes_count) / daysLeft).toFixed(1)}/day to take #1
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="m13 17 5-5-5-5"></path><path d="M6 17 11 12 6 7"></path></svg>
+                                <span>Target: <strong>${targetVelo} likes/day</strong> to reach #1 by Mar 13</span>
                             </div>
-                            ` : '<div class="climb-tip" style="color:var(--accent)">🌟 Defending Top 1 Status!</div>'}
+                            ` : '<div class="climb-tip" style="color:var(--accent); border-color:var(--accent-glow)">✨ PROJECT IS CURRENTLY PACING FOR GOLD!</div>'}
                         </div>
                     </div>
                 </div>
@@ -423,29 +443,29 @@
 
         function renderCharts() {
             const compItems = allData.filter(p => p.is_competition).slice(0, 10);
+            const palette = ['#F59E0B', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#06B6D4', '#F43F5E', '#84CC16', '#A855F7', '#64748B'];
             
             // Velocity Chart
             const ctxVelo = document.getElementById('veloChart').getContext('2d');
             new Chart(ctxVelo, {
                 type: 'bar',
                 data: {
-                    labels: compItems.map(p => p.title.substring(0, 15) + '...'),
+                    labels: compItems.map(p => p.title.length > 15 ? p.title.substring(0, 12) + '...' : p.title),
                     datasets: [{
-                        label: 'Velocity (Likes/Day)',
+                        label: 'Velocity',
                         data: compItems.map(p => p.velocity),
-                        backgroundColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(59, 130, 246, 0.4)'),
-                        borderColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : '#3b82f6'),
+                        backgroundColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(255, 255, 255, 0.1)'),
+                        borderColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(255, 255, 255, 0.2)'),
                         borderWidth: 1,
-                        borderRadius: 6
+                        borderRadius: 4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6b7280' } },
-                        x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } } }
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#4b5563', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 9 } } }
                     }
                 }
             });
@@ -463,17 +483,17 @@
                     labels: Object.keys(spaces),
                     datasets: [{
                         data: Object.values(spaces),
-                        backgroundColor: ['#ff9900', '#3b82f6', '#10b981', '#a855f7', '#f43f5e', '#64748b'],
-                        borderWidth: 0
+                        backgroundColor: palette,
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { 
-                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 10, font: { size: 9 } } }
+                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10, font: { size: 9 } } }
                     },
-                    cutout: '70%'
+                    cutout: '75%'
                 }
             });
 
@@ -496,12 +516,11 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { 
-                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 10, font: { size: 9 } } }
+                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10, font: { size: 9 } } }
                     },
-                    cutout: '70%'
+                    cutout: '75%'
                 }
             });
         }
@@ -533,11 +552,12 @@
         function renderList(data) {
             const list = document.getElementById('rankList');
             if (data.length === 0) {
-                list.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-mute)">No posts found in this timeframe.</div>`;
+                list.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-mute)">No posts found matching your criteria.</div>`;
                 return;
             }
 
-            const daysLeft = Math.max(1, (COMPETITION_END - new Date()) / 86400000);
+            const now = new Date();
+            const daysLeft = Math.max(0.1, (COMPETITION_END - now) / 86400000);
 
             list.innerHTML = data.slice(0, 100).map((p, idx) => {
                 const globalRank = allData.indexOf(p) + 1;
@@ -551,10 +571,9 @@
                         <div class="item-content">
                             <span class="item-title">${p.title}</span>
                             <div class="item-sub">
-                                <span>${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
+                                <span style="font-weight:700; color:var(--text-dim)">${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
                                 ${p.region ? `<span class="tag-region">${p.region}</span>` : ''}
                                 ${p.is_competition ? '<span class="tag-comp">AIdeas</span>' : ''}
-                                <span>&middot; ${p.space_name || 'General'}</span>
                                 <span class="tag-velocity">⚡ ${p.velocity || 0} v/d</span>
                                 <span style="font-size:9px; opacity:0.6">${p.created_at.split(' ')[0]}</span>
                             </div>
@@ -562,7 +581,7 @@
                         <div class="item-likes">
                             <span class="likes-num">${p.likes_count}</span>
                             <span class="likes-lbl">Likes</span>
-                            <span class="forecast-num">🔭 ~${forecast}</span>
+                            <span class="forecast-num" title="Predicted likes by Mar 13">🔭 ~${forecast}</span>
                         </div>
                     </a>
                 `;
@@ -570,18 +589,23 @@
         }
 
         function startRefreshCountdown() {
-            // GitHub Actions runs every 15 minutes: 00, 15, 30, 45
             function update() {
                 const now = new Date();
                 const m = now.getMinutes();
                 const s = now.getSeconds();
-                
                 const nextRefreshMin = 15 - (m % 15);
                 const displayMin = (s === 0) ? nextRefreshMin : nextRefreshMin - 1;
                 const displaySec = (60 - s) % 60;
-                
                 document.getElementById('countdown-timer').textContent = 
                     String(displayMin).padStart(2, '0') + ":" + String(displaySec).padStart(2, '0');
+                
+                // Also update the global deadline countdown every second
+                const diff = COMPETITION_END - now;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('deadline-timer').textContent = `${days}D ${hours}H ${mins}M ${secs}S REMAINING`;
             }
             setInterval(update, 1000);
             update();
