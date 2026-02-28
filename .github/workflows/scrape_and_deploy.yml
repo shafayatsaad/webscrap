@@ -23,18 +23,18 @@ jobs:
       - name: Install Dependencies
         run: |
             python -m pip install --upgrade pip
-            pip install requests
+            pip install requests selenium
 
       - name: Run Scraper
         run: python aws_scraper.py
 
       - name: Sync Data to Static Site
         run: |
-          cp aws_builder_likes.json dist/data.json
+          cp dist/aws_builder_likes.json dist/data.json
 
       - name: Commit and Push changes
         run: |
           git config --global user.name "AWS Rank Bot"
           git config --global user.email "bot@example.com"
-          git add aws_builder_likes.json aws_builder_likes.csv dist/data.json
+          git add aws_builder_likes.csv dist/aws_builder_likes.json dist/data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update rankings [skip ci]" && git push)
