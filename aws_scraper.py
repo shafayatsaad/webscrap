@@ -141,13 +141,24 @@ def extract_posts_from_logs(driver):
                     uri = item.get("uri", "")
                     url_ = f"{BASE_URL}{uri}" if uri else (f"{BASE_URL}/content/{cid.split('/')[-1]}" if cid else BASE_URL)
                     
+                    created_ts = item.get("createdAt")
+                    if created_ts and created_ts > 1e12: 
+                        created_ts = created_ts / 1000
+                    
+                    now_ts = datetime.now().timestamp()
+                    days_since = max(1, (now_ts - (created_ts or now_ts)) / 86400)
+                    likes = item.get("likesCount", 0)
+                    velocity = round(likes / days_since, 2)
+
                     pdata = {
                         "id": cid, "content_id": cid,
                         "title": item.get("title", "Untitled"),
                         "content_type": item.get("contentType", ""),
-                        "likes_count": item.get("likesCount", 0),
+                        "likes_count": likes,
                         "comments_count": item.get("commentsCount", 0),
                         "views_count": item.get("viewsCount"),
+                        "velocity": velocity,
+                        "created_ts": created_ts,
                         "created_at": format_timestamp(item.get("createdAt")),
                         "last_published_at": format_timestamp(item.get("lastPublishedAt")),
                         "uri": uri, "url": url_,
