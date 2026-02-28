@@ -40,7 +40,7 @@ except ImportError:
 # ──────────────────────────────────────────────────────────────────────────────
 BASE_URL = "https://builder.aws.com"
 API_URL = "https://api.builder.aws.com/cs/content/feed"
-CONTENT_TYPES = ["ARTICLE", "POST", "SERIES"]  # API uses uppercase
+CONTENT_TYPES = ["ARTICLE"]  # Competition posts are articles
 PAGE_SIZE = 50  # Max items per API request
 OUTPUT_CSV = "aws_builder_likes.csv"
 OUTPUT_JSON = "aws_builder_likes.json"
