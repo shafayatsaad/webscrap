@@ -3,292 +3,488 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AWS Builder - Live Rankings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AWS Builder - AIdeas Leaderboard & Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-primary: #050810;
-            --bg-card: #151b2d;
+            --bg: #030712;
+            --card: #111827;
+            --card-hover: #1f2937;
             --accent: #ff9900;
+            --accent-soft: rgba(255, 153, 0, 0.15);
             --accent-glow: rgba(255, 153, 0, 0.4);
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --text-dim: #6b7280;
+            --text: #f9fafb;
+            --text-dim: #9ca3af;
+            --text-mute: #6b7280;
             --green: #10b981;
-            --border: #232d45;
+            --blue: #3b82f6;
+            --border: #1f2937;
             --radius: 16px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
-        .bg-mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: var(--bg-primary); background-image: radial-gradient(at 0% 0%, rgba(255,153,0,0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(59,130,246,0.05) 0px, transparent 50%); }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px 40px; }
 
-        /* ── Header ── */
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-        .header-left h1 { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-        .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .update-time { font-size: 11px; color: var(--text-dim); font-weight: 600; }
-        .refresh-btn { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-glow); transition: all 0.2s; }
-        .refresh-btn:hover { transform: translateY(-1px); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh; 
+            line-height: 1.5;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255,153,0,0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59,130,246,0.03) 0px, transparent 50%);
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+
+        /* --- Header --- */
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+        .logo-area h1 { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-area p { font-size: 13px; color: var(--text-dim); font-weight: 500; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+        .live-indicator { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
+
+        .refresh-btn {
+            background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 12px;
+            font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 20px var(--accent-glow); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .refresh-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px var(--accent-glow); }
         .refresh-btn:active { transform: scale(0.97); }
-        .spinner { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,0.2); border-top-color: #000; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+
+        /* --- Scorecard Hero --- */
+        .hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (min-width: 768px) { .hero-stats { grid-template-columns: repeat(4, 1fr); } }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: transform 0.2s, border-color 0.2s; }
+        .card:hover { border-color: var(--text-mute); }
+        .stat-label { font-size: 11px; color: var(--text-mute); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .stat-val { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+        .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; font-weight: 600; }
+
+        /* --- Personal Rank Display --- */
+        .rank-hero { 
+            background: linear-gradient(145deg, #1e293b, #030712); border: 2px solid var(--accent); 
+            border-radius: var(--radius); padding: 24px; margin-bottom: 32px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 40px var(--accent-soft);
+        }
+        .rank-hero::after { 
+            content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; 
+            background: radial-gradient(circle, rgba(255,153,0,0.1), transparent 70%); pointer-events: none;
+        }
+        .rank-grid { display: grid; grid-template-columns: 1fr; gap: 24px; position: relative; z-index: 1; }
+        @media (min-width: 768px) { .rank-grid { grid-template-columns: 1fr 1fr; } }
+
+        .rank-main { display: flex; align-items: center; gap: 20px; }
+        .rank-badge { 
+            width: 80px; height: 80px; background: var(--accent); color: #000; border-radius: 20px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
+            box-shadow: 0 8px 30px var(--accent-glow); transform: rotate(-3deg);
+        }
+        .rank-badge .lbl { font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .rank-badge .num { font-size: 32px; font-weight: 950; }
+
+        .rank-info h2 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .rank-info p { font-size: 14px; color: var(--text-dim); }
+
+        .comp-comparison { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .comp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .comp-row:last-child { margin-bottom: 0; }
+        .comp-lbl { font-size: 12px; font-weight: 700; color: var(--text-mute); }
+        .comp-val { font-size: 14px; font-weight: 800; color: var(--accent); }
+        .climb-tip { font-size: 12px; font-weight: 700; color: var(--green); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+
+        /* --- Analytics Section --- */
+        .analytics-section { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; }
+        @media (min-width: 768px) { .analytics-section { grid-template-columns: 1fr 1fr; } }
+        .chart-container { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; height: 320px; display: flex; flex-direction: column; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .chart-header h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* --- Layout --- */
+        .layout-main { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 900px) { .layout-main { grid-template-columns: 1fr 340px; } }
+
+        /* --- Table Controls --- */
+        .controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+        .filter-tabs { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; }
+        .tab-btn { 
+            border: none; background: none; color: var(--text-dim); padding: 8px 16px; border-radius: 8px; 
+            font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; 
+        }
+        .tab-btn.active { background: var(--accent); color: #000; }
+
+        .search-box { position: relative; flex: 1; min-width: 250px; }
+        .search-box input { 
+            width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 12px; 
+            padding: 10px 16px 10px 40px; color: #fff; font-family: inherit; font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: var(--accent); }
+        .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-mute); }
+
+        /* --- List --- */
+        .rank-list { display: flex; flex-direction: column; gap: 10px; }
+        .rank-item { 
+            background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; 
+            display: flex; align-items: center; gap: 16px; transition: all 0.2s; text-decoration: none; color: inherit;
+        }
+        .rank-item:hover { transform: translateX(4px); border-color: rgba(255,255,255,0.15); background: var(--card-hover); }
+        .rank-item.highlighted { border-color: var(--accent); background: var(--accent-soft); }
+        
+        .item-rank { width: 36px; font-size: 18px; font-weight: 900; color: var(--text-mute); text-align: center; }
+        .item-content { flex: 1; min-width: 0; }
+        .item-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .item-sub { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+        .tag-comp { font-size: 8px; font-weight: 800; background: var(--blue); color: #fff; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; }
+        
+        .item-likes { text-align: right; }
+        .likes-num { font-size: 20px; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
+        .likes-lbl { font-size: 8px; color: var(--text-mute); text-transform: uppercase; font-weight: 800; }
+
+        /* --- Sidebar stats --- */
+        .sidebar { display: flex; flex-direction: column; gap: 24px; }
+        .side-card h4 { font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; color: var(--accent); }
+        .side-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; color: var(--text-dim); }
+        .side-row span:last-child { color: #fff; font-weight: 700; }
+
+        /* --- Loading --- */
+        #overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; gap: 20px; }
+        .loader { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Stats ── */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); text-align: center; }
-        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; margin-bottom: 2px; }
-        .stat-value { font-size: 22px; font-weight: 800; }
-
-        /* ── Highlight ── */
-        .highlight-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 2px solid var(--accent); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 0 30px var(--accent-glow); }
-        .hl-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .hl-badge { background: var(--accent); color: #000; padding: 4px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; }
-        .hl-rank { font-size: 56px; font-weight: 900; color: var(--accent); line-height: 1; }
-        .hl-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #fff; }
-        .hl-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
-        .hl-stat-label { display: block; font-size: 9px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; }
-        .hl-stat-val { font-size: 18px; font-weight: 800; color: #fff; }
-        .ctx-section { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
-        .ctx-title { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
-        .ctx-item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; }
-        .ctx-likes { font-weight: 800; color: var(--accent); }
-        .climb-badge { background: rgba(16,185,129,0.15); color: var(--green); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-top: 8px; display: inline-block; }
-
-        /* ── Filters ── */
-        .controls { display: flex; gap: 8px; margin-bottom: 16px; }
-        .filter-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-        .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
-        /* ── Rankings ── */
-        .rank-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; transition: all 0.2s; }
-        .rank-item:hover { border-color: rgba(255,255,255,0.15); }
-        .rank-item.highlighted { border-color: var(--accent); background: rgba(255,153,0,0.05); }
-        .rank-num { width: 36px; font-size: 20px; font-weight: 900; color: var(--text-dim); text-align: center; flex-shrink: 0; }
-        .rank-info { flex: 1; min-width: 0; }
-        .item-title { font-size: 14px; font-weight: 700; color: var(--text-primary); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-title:hover { color: var(--accent); }
-        .item-meta { font-size: 11px; color: var(--text-dim); display: flex; gap: 8px; margin-top: 2px; }
-        .comp-tag { color: #3b82f6; font-weight: 800; font-size: 9px; text-transform: uppercase; }
-        .item-stats { text-align: right; flex-shrink: 0; }
-        .likes-val { font-size: 18px; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
-        .likes-lbl { font-size: 9px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
-
-        /* ── Loading ── */
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; gap: 16px; }
-        .loader-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* --- Footer --- */
+        footer { margin-top: 60px; padding: 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--text-mute); }
+        footer a { color: var(--accent); text-decoration: none; font-weight: 700; }
     </style>
 </head>
 <body>
-    <div class="bg-mesh"></div>
-    <div id="loadingOverlay">
-        <div class="loader-spinner"></div>
-        <div style="font-size:13px; font-weight:700; color:var(--text-secondary)">Loading Rankings...</div>
+    <div id="overlay">
+        <div class="loader"></div>
+        <p style="font-weight: 800; letter-spacing: 0.5px">CALIBRATING RANKINGS...</p>
     </div>
 
-    <div class="container">
-        <!-- Header with Refresh Button -->
-        <div class="header">
-            <div class="header-left">
-                <h1>AWS Builder</h1>
-                <div class="header-meta">
-                    <div class="live-dot"></div>
-                    <span class="update-time" id="lastUpdated">Loading...</span>
+    <div class="container" id="main" style="display: none">
+        <header>
+            <div class="logo-area">
+                <h1>Builder Rankings</h1>
+                <p><span class="live-indicator"></span> Real-time Aggregator & Analytics</p>
+            </div>
+            <button class="refresh-btn" onclick="location.reload()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                REFRESH DATA
+            </button>
+        </header>
+
+        <div class="hero-stats">
+            <div class="card">
+                <p class="stat-label">Total Posts</p>
+                <p class="stat-val" id="statTotal">--</p>
+                <p class="stat-sub">Scanned from feed</p>
+            </div>
+            <div class="card">
+                <p class="stat-label">Competition</p>
+                <p class="stat-val" id="statComp">--</p>
+                <p class="stat-sub">AIdeas Entries</p>
+            </div>
+            <div class="card">
+                <p class="stat-label">Top Likes</p>
+                <p class="stat-val" id="statMax">--</p>
+                <p class="stat-sub">Current high score</p>
+            </div>
+            <div class="card">
+                <p class="stat-label">Last Updated</p>
+                <p class="stat-val" id="statUpdate" style="font-size: 18px; padding-top: 8px">--</p>
+                <p class="stat-sub">Automatic tracking</p>
+            </div>
+        </div>
+
+        <div id="meCardContainer"></div>
+
+        <div class="analytics-section">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Competition Top 10 Comparison</h3>
+                </div>
+                <canvas id="compChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Engagement Distribution</h3>
+                </div>
+                <canvas id="distChart"></canvas>
+            </div>
+        </div>
+
+        <div class="layout-main">
+            <div class="content-area">
+                <div class="controls">
+                    <div class="filter-tabs">
+                        <button class="tab-btn active" onclick="setTab('all', this)">Global Feed</button>
+                        <button class="tab-btn" onclick="setTab('comp', this)">AIdeas Competition</button>
+                    </div>
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                        <input type="text" placeholder="Search by title or author..." onkeyup="handleSearch(this)">
+                    </div>
+                </div>
+                <div class="rank-list" id="rankList"></div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card side-card">
+                    <h4>Competition Health</h4>
+                    <div class="side-row"><span>Detected Entries</span><span id="sideCompN">--</span></div>
+                    <div class="side-row"><span>Avg Likes</span><span id="sideCompAvg">--</span></div>
+                    <div class="side-row"><span>Total Engagements</span><span id="sideCompLikes">--</span></div>
+                    <div class="side-row"><span>Competition %</span><span id="sideCompPct">--</span></div>
+                </div>
+                <div class="card side-card">
+                    <h4>Builder Stats</h4>
+                    <div class="side-row"><span>Articles</span><span id="sideStatArt">--</span></div>
+                    <div class="side-row"><span>Unique Authors</span><span id="sideStatAuth">--</span></div>
+                    <div class="side-row"><span>Platform Avg</span><span id="sideStatAvg">--</span></div>
                 </div>
             </div>
-            <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">
-                <div class="spinner" id="refreshSpinner"></div>
-                <span id="refreshText">&#x21bb; Refresh</span>
-            </button>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-label">Total Posts</div><div class="stat-value" id="statPosts">--</div></div>
-            <div class="stat-card"><div class="stat-label">Competition</div><div class="stat-value" id="statComp">--</div></div>
-            <div class="stat-card"><div class="stat-label">Total Likes</div><div class="stat-value" id="statLikes">--</div></div>
-            <div class="stat-card"><div class="stat-label">Avg Likes</div><div class="stat-value" id="statAvg">--</div></div>
-        </div>
-
-        <!-- Highlight Card -->
-        <div id="highlightContainer"></div>
-
-        <!-- Filters -->
-        <div class="controls">
-            <button class="filter-btn active" id="btnAll" onclick="setFilter('all')">All Posts</button>
-            <button class="filter-btn" id="btnComp" onclick="setFilter('comp')">Competition Only</button>
-        </div>
-
-        <!-- Rankings List -->
-        <div id="rankingsList"></div>
+        <footer>
+            Prepared for <strong>Shafayat Saad</strong> &middot; Data fetched via AWS Builder Internal API &middot; <a href="https://github.com/shafayatsaad/webscrap" target="_blank">View Repo</a>
+        </footer>
     </div>
 
     <script>
-        let currentFilter = 'all';
-        let allPosts = [];
-        const HIGHLIGHT_URI = "/content/3AAMRb7lRzAJnleldfYBBtfM1WG/aideas-transforming-healthcare-into-ai-powered-wellness-companion";
+        const HIGHLIGHT_ID = "3AAMRb7l"; // ID snippet for your post
+        let allData = [];
+        let filteredData = [];
+        let currentTab = 'all';
+        let searchQuery = '';
 
-        function setFilter(f) {
-            currentFilter = f;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(f === 'all' ? 'btnAll' : 'btnComp').classList.add('active');
-            renderList();
-        }
-
-        function isHighlight(p) {
-            const pid = (p.id || '').toLowerCase();
-            const puri = (p.uri || '').toLowerCase();
-            const hl = HIGHLIGHT_URI.toLowerCase();
-            return hl.includes(pid) || (puri && hl.includes(puri)) || (puri && puri.includes('aideas-transforming-healthcare'));
-        }
-
-        async function fetchData() {
+        async function init() {
             try {
                 const res = await fetch('data.json?_=' + Date.now());
-                const posts = await res.json();
-                allPosts = posts;
-
-                document.getElementById('loadingOverlay').style.display = 'none';
+                allData = await res.json();
                 
-                const now = new Date();
-                document.getElementById('lastUpdated').textContent = 
-                    `Updated ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+                // Remove duplicates by ID
+                const seen = new Set();
+                allData = allData.filter(p => !seen.has(p.id) && seen.add(p.id));
+
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('main').style.display = 'block';
 
                 updateStats();
-                renderHighlight();
-                renderList();
-            } catch(e) {
-                console.error('Load error:', e);
-                document.getElementById('rankingsList').innerHTML = 
-                    '<div style="text-align:center;padding:40px;color:var(--text-dim)">Failed to load data. Ensure data.json exists.</div>';
-                document.getElementById('loadingOverlay').style.display = 'none';
+                renderMeCard();
+                renderCharts();
+                applyFilters();
+            } catch (e) {
+                console.error("Failed to load data", e);
+                document.querySelector('#overlay p').textContent = "ERROR LOADING DATA. PLEASE ENSURE DATA.JSON EXISTS.";
+                document.querySelector('.loader').style.borderTopColor = "#ef4444";
             }
         }
 
         function updateStats() {
-            const total = allPosts.length;
-            const compCount = allPosts.filter(p => p.is_competition === true).length;
-            const totalLikes = allPosts.reduce((s, p) => s + (p.likes_count || 0), 0);
-            const avg = total > 0 ? (totalLikes / total).toFixed(1) : '0';
+            const total = allData.length;
+            const compItems = allData.filter(p => p.is_competition);
+            const maxLikes = Math.max(...allData.map(p => p.likes_count || 0));
+            const totalLikes = allData.reduce((s, p) => s + (p.likes_count || 0), 0);
+            const compLikes = compItems.reduce((s, p) => s + (p.likes_count || 0), 0);
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statComp').textContent = compItems.length;
+            document.getElementById('statMax').textContent = maxLikes;
+            
+            const now = new Date();
+            document.getElementById('statUpdate').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-            document.getElementById('statPosts').textContent = total;
-            document.getElementById('statComp').textContent = compCount;
-            document.getElementById('statLikes').textContent = totalLikes;
-            document.getElementById('statAvg').textContent = avg;
+            // Sidebar
+            document.getElementById('sideCompN').textContent = compItems.length;
+            document.getElementById('sideCompAvg').textContent = (compLikes / Math.max(1, compItems.length)).toFixed(1);
+            document.getElementById('sideCompLikes').textContent = compLikes;
+            document.getElementById('sideCompPct').textContent = ((compItems.length / total) * 100).toFixed(1) + '%';
+            
+            document.getElementById('sideStatArt').textContent = total;
+            document.getElementById('sideStatAuth').textContent = new Set(allData.map(p => p.author_alias)).size;
+            document.getElementById('sideStatAvg').textContent = (totalLikes / total).toFixed(1);
         }
 
-        function renderHighlight() {
-            const container = document.getElementById('highlightContainer');
-            let hIdx = -1;
-            for (let i = 0; i < allPosts.length; i++) {
-                if (isHighlight(allPosts[i])) { hIdx = i; break; }
-            }
-            if (hIdx === -1) { container.innerHTML = ''; return; }
+        function renderMeCard() {
+            const meIndex = allData.findIndex(p => p.id && p.id.includes(HIGHLIGHT_ID));
+            if (meIndex === -1) return;
 
-            const post = allPosts[hIdx];
-            const rank = hIdx + 1;
-            const pct = ((rank / allPosts.length) * 100).toFixed(1);
-            const compPosts = allPosts.filter(p => p.is_competition === true);
-            const compRank = compPosts.findIndex(p => isHighlight(p)) + 1;
+            const me = allData[meIndex];
+            const globalRank = meIndex + 1;
+            
+            const compPosts = allData.filter(p => p.is_competition);
+            const compRank = compPosts.findIndex(p => p.id && p.id.includes(HIGHLIGHT_ID)) + 1;
 
-            // Nearby posts
-            let nearbyHTML = '';
-            let climbLikes = 0;
-            const nearby = [];
-            if (hIdx > 0) {
-                const above = allPosts[hIdx - 1];
-                nearby.push({ rank: hIdx, title: above.title, likes: above.likes_count });
-                climbLikes = (above.likes_count - post.likes_count) + 1;
-            }
-            if (hIdx < allPosts.length - 1) {
-                const below = allPosts[hIdx + 1];
-                nearby.push({ rank: hIdx + 2, title: below.title, likes: below.likes_count });
-            }
+            const above = meIndex > 0 ? allData[meIndex - 1] : null;
+            const climb = above ? (above.likes_count - me.likes_count) + 1 : 0;
 
-            if (nearby.length > 0) {
-                nearbyHTML = `
-                    <div class="ctx-section">
-                        <div class="ctx-title">Rank Neighborhood</div>
-                        ${nearby.map(n => `
-                            <div class="ctx-item">
-                                <span>#${n.rank} ${n.title.length > 35 ? n.title.substring(0,32) + '...' : n.title}</span>
-                                <span class="ctx-likes">${n.likes} likes</span>
-                            </div>
-                        `).join('')}
-                        ${climbLikes > 0 ? `<div class="climb-badge">🚀 Need ${climbLikes} more likes to climb to #${rank - 1}!</div>` : ''}
-                    </div>
-                `;
-            }
-
+            const container = document.getElementById('meCardContainer');
             container.innerHTML = `
-                <div class="highlight-card">
-                    <div class="hl-header">
-                        <div class="hl-badge">YOUR POST</div>
-                        <div class="hl-rank">#${rank}</div>
+                <div class="rank-hero">
+                    <div class="rank-grid">
+                        <div class="rank-main">
+                            <div class="rank-badge">
+                                <span class="lbl">Rank</span>
+                                <span class="num">#${globalRank}</span>
+                            </div>
+                            <div class="rank-info">
+                                <h2>${me.title}</h2>
+                                <p>By <strong>${me.author_name || me.author_alias}</strong> &middot; Currently at <strong>${me.likes_count}</strong> likes</p>
+                            </div>
+                        </div>
+                        <div class="comp-comparison">
+                            <div class="comp-row">
+                                <span class="comp-lbl">🏆 Competition Rank</span>
+                                <span class="comp-val">#${compRank} OF ${compPosts.length}</span>
+                            </div>
+                            <div class="comp-row">
+                                <span class="comp-lbl">📈 Platform Percentile</span>
+                                <span class="comp-val">TOP ${((globalRank / allData.length) * 100).toFixed(1)}%</span>
+                            </div>
+                            ${climb > 0 ? `
+                            <div class="climb-tip">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+                                Need ${climb} likes to reach rank #${globalRank - 1}
+                            </div>
+                            ` : ''}
+                        </div>
                     </div>
-                    <h2 class="hl-title">${post.title}</h2>
-                    <div class="hl-stats">
-                        <div><span class="hl-stat-label">Likes</span><span class="hl-stat-val">${post.likes_count}</span></div>
-                        <div><span class="hl-stat-label">Overall</span><span class="hl-stat-val">Top ${pct}%</span></div>
-                        <div><span class="hl-stat-label">Comp Rank</span><span class="hl-stat-val">#${compRank || '?'}/${compPosts.length}</span></div>
-                    </div>
-                    ${nearbyHTML}
                 </div>
             `;
         }
 
-        function renderList() {
-            const list = document.getElementById('rankingsList');
-            const filtered = currentFilter === 'all' ? allPosts : allPosts.filter(p => p.is_competition === true);
+        function renderCharts() {
+            const compItems = allData.filter(p => p.is_competition).slice(0, 10);
+            const myPost = allData.find(p => p.id && p.id.includes(HIGHLIGHT_ID));
 
-            if (filtered.length === 0) {
-                list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)">No posts found for this filter.</div>';
-                return;
-            }
+            // Competition Comparison Chart
+            const ctxComp = document.getElementById('compChart').getContext('2d');
+            new Chart(ctxComp, {
+                type: 'bar',
+                data: {
+                    labels: compItems.map(p => p.title.substring(0, 15) + '...'),
+                    datasets: [{
+                        label: 'Likes',
+                        data: compItems.map(p => p.likes_count),
+                        backgroundColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(255, 153, 0, 0.3)'),
+                        borderColor: '#ff9900',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6b7280' } },
+                        x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } } }
+                    }
+                }
+            });
 
-            list.innerHTML = filtered.map(p => {
-                const globalRank = allPosts.indexOf(p) + 1;
-                const hl = isHighlight(p);
-                const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
-                return `
-                    <div class="rank-item ${hl ? 'highlighted' : ''}">
-                        <div class="rank-num" ${globalRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
-                        <div class="rank-info">
-                            <a href="${p.url || '#'}" target="_blank" class="item-title">${p.title}</a>
-                            <div class="item-meta">
-                                <span>@${p.author_alias || 'unknown'}</span>
-                                ${p.is_competition ? '<span class="comp-tag">Competition</span>' : ''}
-                            </div>
-                        </div>
-                        <div class="item-stats">
-                            <span class="likes-val">${p.likes_count}</span>
-                            <span class="likes-lbl">Likes</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+            // Distribution Chart
+            const ctxDist = document.getElementById('distChart').getContext('2d');
+            const brackets = ['0', '1-5', '6-20', '21-100', '100+'];
+            const counts = [
+                allData.filter(p => p.likes_count === 0).length,
+                allData.filter(p => p.likes_count > 0 && p.likes_count <= 5).length,
+                allData.filter(p => p.likes_count > 5 && p.likes_count <= 20).length,
+                allData.filter(p => p.likes_count > 20 && p.likes_count <= 100).length,
+                allData.filter(p => p.likes_count > 100).length
+            ];
 
-        function refreshData() {
-            const btn = document.getElementById('refreshBtn');
-            const spinner = document.getElementById('refreshSpinner');
-            const text = document.getElementById('refreshText');
-            btn.disabled = true;
-            spinner.style.display = 'block';
-            text.textContent = 'Syncing...';
-            fetchData().finally(() => {
-                btn.disabled = false;
-                spinner.style.display = 'none';
-                text.innerHTML = '&#x21bb; Refresh';
+            new Chart(ctxDist, {
+                type: 'doughnut',
+                data: {
+                    labels: brackets,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: ['#1f2937', '#374151', '#3b82f6', '#10b981', '#ff9900'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 20, font: { size: 11 } } }
+                    },
+                    cutout: '70%'
+                }
             });
         }
 
-        // Auto-refresh every 60 seconds
-        setInterval(() => fetchData(), 60000);
-        fetchData();
+        function setTab(tab, el) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            applyFilters();
+        }
+
+        function handleSearch(el) {
+            searchQuery = el.value.toLowerCase();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            let data = allData;
+            
+            if (currentTab === 'comp') {
+                data = data.filter(p => p.is_competition);
+            }
+
+            if (searchQuery) {
+                data = data.filter(p => 
+                    (p.title && p.title.toLowerCase().includes(searchQuery)) || 
+                    (p.author_alias && p.author_alias.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            renderList(data);
+        }
+
+        function renderList(data) {
+            const list = document.getElementById('rankList');
+            if (data.length === 0) {
+                list.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-mute)">No posts matching your criteria.</div>`;
+                return;
+            }
+
+            list.innerHTML = data.slice(0, 200).map((p, idx) => {
+                const globalRank = allData.indexOf(p) + 1;
+                const isMe = p.id && p.id.includes(HIGHLIGHT_ID);
+                const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
+                
+                return `
+                    <a href="${p.url || '#'}" target="_blank" class="rank-item ${isMe ? 'highlighted' : ''}">
+                        <div class="item-rank" ${globalRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
+                        <div class="item-content">
+                            <span class="item-title">${p.title}</span>
+                            <div class="item-sub">
+                                <span>${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
+                                ${p.is_competition ? '<span class="tag-comp">AIdeas</span>' : ''}
+                                <span>&middot; ${p.content_type}</span>
+                            </div>
+                        </div>
+                        <div class="item-likes">
+                            <span class="likes-num">${p.likes_count}</span>
+                            <span class="likes-lbl">Likes</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+            if (data.length > 200) {
+                list.innerHTML += `<div style="padding: 16px; text-align: center; font-size: 11px; color: var(--text-mute)">Showing top 200 results.</div>`;
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
