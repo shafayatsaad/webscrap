@@ -43,7 +43,7 @@ API_URL = "https://api.builder.aws.com/cs/content/feed"
 CONTENT_TYPES = ["ARTICLE"]  # Competition posts are articles
 PAGE_SIZE = 50  # Max items per API request
 OUTPUT_CSV = "aws_builder_likes.csv"
-OUTPUT_JSON = "aws_builder_likes.json"
+OUTPUT_JSON = "dist/aws_builder_likes.json"
 
 # Competition timeframe configuration
 COMPETITION_START_DATE = "2026-02-11 00:00:00"
