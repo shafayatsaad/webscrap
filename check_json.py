@@ -1,23 +1,19 @@
-import os, json
+import json
 
-fpath = "aws_builder_likes.json"
-size = os.path.getsize(fpath)
-print(f"File size: {size} bytes")
-
-with open(fpath, "r", encoding="utf-8") as f:
+# Read with errors='replace' to find the problem
+with open('aws_builder_likes.json', 'r', encoding='utf-8', errors='replace') as f:
     raw = f.read()
 
-print(f"Total chars: {len(raw)}")
-print(f"First 100: {repr(raw[:100])}")
-print(f"Last 100: {repr(raw[-100:])}")
+# Find exact problem area
+pos = 6549
+print(f"Around position {pos}:")
+print(repr(raw[pos-50:pos+50]))
 
-# Try to parse
+# Check if it's just a display issue or actual bad JSON
+# Try fixing and re-parsing
 try:
     data = json.loads(raw)
     print(f"\nParsed OK: {len(data)} items")
 except json.JSONDecodeError as e:
-    print(f"\nJSON error at position {e.pos}: {e.msg}")
-    # Show context around error
-    start = max(0, e.pos - 100)
-    end = min(len(raw), e.pos + 100)
-    print(f"Context: ...{repr(raw[start:end])}...")
+    print(f"\nJSON error at {e.pos}: {e.msg}")
+    print(f"Around error: {repr(raw[e.pos-50:e.pos+50])}")
