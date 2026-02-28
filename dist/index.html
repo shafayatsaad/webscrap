@@ -149,10 +149,12 @@
         .item-sub { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .tag-comp { font-size: 8px; font-weight: 800; background: var(--blue); color: #fff; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; }
         .tag-velocity { font-size: 9px; font-weight: 800; background: rgba(16,185,129,0.1); color: var(--green); padding: 1px 6px; border-radius: 10px; border: 1px solid rgba(16,185,129,0.2); }
+        .tag-region { font-size: 8px; font-weight: 800; background: rgba(59,130,246,0.1); color: var(--blue); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); text-transform: uppercase; }
         
-        .item-likes { text-align: right; min-width: 60px; }
-        .likes-num { font-size: 20px; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
-        .likes-lbl { font-size: 8px; color: var(--text-mute); text-transform: uppercase; font-weight: 800; }
+        .item-likes { text-align: right; min-width: 80px; display: flex; flex-direction: column; align-items: flex-end; }
+        .likes-num { font-size: 18px; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
+        .likes-lbl { font-size: 8px; color: var(--text-mute); text-transform: uppercase; font-weight: 800; margin-top: 2px; }
+        .forecast-num { font-size: 11px; font-weight: 800; color: var(--text-dim); margin-top: 4px; border-top: 1px solid var(--border); padding-top: 4px; width: 100%; text-align: right; }
 
         /* --- Sidebar stats --- */
         .sidebar { display: flex; flex-direction: column; gap: 24px; }
@@ -224,19 +226,25 @@
             </div>
         </div>
 
-        <div class="analytics-section">
+        <div class="analytics-section" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
             <div class="chart-container">
                 <div class="chart-header">
-                    <h3>Engagement Velocity (Top 10 AIdeas)</h3>
+                    <h3>Engagement Velocity (Top 10)</h3>
                     <span style="font-size: 10px; color: var(--text-mute)">Likes / Day</span>
                 </div>
                 <canvas id="veloChart"></canvas>
             </div>
             <div class="chart-container">
                 <div class="chart-header">
-                    <h3>Category Breakdown</h3>
+                    <h3>Space Breakdown</h3>
                 </div>
                 <canvas id="spaceChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Regional Distribution</h3>
+                </div>
+                <canvas id="regionChart"></canvas>
             </div>
         </div>
 
@@ -283,6 +291,7 @@
 
     <script>
         const HIGHLIGHT_ID = "3AAMRb7l";
+        const COMPETITION_END = new Date("2026-03-21T00:00:00");
         let allData = [];
         let currentTab = 'comp';
         let searchQuery = '';
@@ -291,6 +300,9 @@
             try {
                 const res = await fetch('data.json?_=' + Date.now());
                 allData = await res.json();
+                
+                // Sort by likes descending
+                allData.sort((a,b) => b.likes_count - a.likes_count);
                 
                 // Remove duplicates
                 const seen = new Set();
@@ -359,6 +371,13 @@
             const above = meIndex > 0 ? allData[meIndex - 1] : null;
             const climb = above ? (above.likes_count - me.likes_count) + 1 : 0;
 
+            // Prediction logic
+            const daysLeft = Math.max(1, (COMPETITION_END - new Date()) / 86400000);
+            const forecasted = Math.round(me.likes_count + (me.velocity * daysLeft));
+            const topPost = compPosts[0];
+            const topForecasted = Math.round(topPost.likes_count + (topPost.velocity * daysLeft));
+            const winProb = Math.min(95, Math.round((me.velocity / (topPost.velocity || 1)) * 50 + (me.likes_count / topPost.likes_count) * 40));
+
             const container = document.getElementById('meCardContainer');
             container.innerHTML = `
                 <div class="rank-hero">
@@ -371,7 +390,7 @@
                             <div class="rank-info">
                                 <h2>${me.title}</h2>
                                 <p>Engagement Velocity: <strong style="color:var(--green)">${me.velocity || 0} likes/day</strong></p>
-                                <p style="margin-top:6px; font-size:12px; opacity:0.7">Created: ${me.created_at}</p>
+                                <p style="margin-top:6px; font-size:12px; opacity:0.7">Region: <span class="tag-region">${me.region || 'Global'}</span> &middot; Created: ${me.created_at}</p>
                             </div>
                         </div>
                         <div class="comp-comparison">
@@ -380,15 +399,19 @@
                                 <span class="comp-val">#${compRank} OF ${compPosts.length}</span>
                             </div>
                             <div class="comp-row">
-                                <span class="comp-lbl">📈 Platform Percentile</span>
-                                <span class="comp-val">TOP ${((globalRank / allData.length) * 100).toFixed(1)}%</span>
+                                <span class="comp-lbl">🔭 Forecasted Growth</span>
+                                <span class="comp-val">~${forecasted} LIKES</span>
                             </div>
-                            ${climb > 0 ? `
+                            <div class="comp-row">
+                                <span class="comp-lbl">🔥 Win Probability</span>
+                                <span class="comp-val">${winProb}% / 100%</span>
+                            </div>
+                            ${compRank > 1 ? `
                             <div class="climb-tip">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
-                                Need ${climb} likes to reach rank #${globalRank - 1}
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m14 9-5 5 5 5"></path><path d="M4 14h6"></path><path d="M10 14h6"></path></svg>
+                                Target Velocity: ${((topForecasted - me.likes_count) / daysLeft).toFixed(1)}/day to take #1
                             </div>
-                            ` : ''}
+                            ` : '<div class="climb-tip" style="color:var(--accent)">🌟 Defending Top 1 Status!</div>'}
                         </div>
                     </div>
                 </div>
@@ -431,15 +454,12 @@
                 const s = p.space_name || 'General';
                 spaces[s] = (spaces[s] || 0) + 1;
             });
-            const spaceLabels = Object.keys(spaces);
-            const spaceCounts = Object.values(spaces);
-
             new Chart(ctxSpace, {
                 type: 'doughnut',
                 data: {
-                    labels: spaceLabels,
+                    labels: Object.keys(spaces),
                     datasets: [{
-                        data: spaceCounts,
+                        data: Object.values(spaces),
                         backgroundColor: ['#ff9900', '#3b82f6', '#10b981', '#a855f7', '#f43f5e', '#64748b'],
                         borderWidth: 0
                     }]
@@ -448,7 +468,35 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 15, font: { size: 10 } } }
+                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 10, font: { size: 9 } } }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Region Breakdown Chart
+            const ctxRegion = document.getElementById('regionChart').getContext('2d');
+            const regions = {};
+            allData.filter(p => p.is_competition).forEach(p => {
+                const r = p.region || 'Global';
+                regions[r] = (regions[r] || 0) + 1;
+            });
+            
+            new Chart(ctxRegion, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(regions),
+                    datasets: [{
+                        data: Object.values(regions),
+                        backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#eab308', '#22c55e', '#94a3b8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 10, font: { size: 9 } } }
                     },
                     cutout: '70%'
                 }
@@ -486,11 +534,14 @@
                 return;
             }
 
+            const daysLeft = Math.max(1, (COMPETITION_END - new Date()) / 86400000);
+
             list.innerHTML = data.slice(0, 100).map((p, idx) => {
                 const globalRank = allData.indexOf(p) + 1;
                 const isMe = p.id && p.id.includes(HIGHLIGHT_ID);
                 const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
-                
+                const forecast = Math.round(p.likes_count + (p.velocity * daysLeft));
+
                 return `
                     <a href="${p.url || '#'}" target="_blank" class="rank-item ${isMe ? 'highlighted' : ''}">
                         <div class="item-rank" ${globalRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
@@ -498,15 +549,17 @@
                             <span class="item-title">${p.title}</span>
                             <div class="item-sub">
                                 <span>${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
+                                ${p.region ? `<span class="tag-region">${p.region}</span>` : ''}
                                 ${p.is_competition ? '<span class="tag-comp">AIdeas</span>' : ''}
                                 <span>&middot; ${p.space_name || 'General'}</span>
-                                <span class="tag-velocity">⚡ ${p.velocity || 0} likes/day</span>
+                                <span class="tag-velocity">⚡ ${p.velocity || 0} v/d</span>
                                 <span style="font-size:9px; opacity:0.6">${p.created_at.split(' ')[0]}</span>
                             </div>
                         </div>
                         <div class="item-likes">
                             <span class="likes-num">${p.likes_count}</span>
                             <span class="likes-lbl">Likes</span>
+                            <span class="forecast-num">🔭 ~${forecast}</span>
                         </div>
                     </a>
                 `;
