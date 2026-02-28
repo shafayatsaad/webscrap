@@ -229,27 +229,7 @@
             </div>
         </div>
 
-        <div class="analytics-section" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Engagement Velocity (Top 10)</h3>
-                    <span style="font-size: 10px; color: var(--text-mute)">Likes / Day</span>
-                </div>
-                <canvas id="veloChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Space Breakdown</h3>
-                </div>
-                <canvas id="spaceChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Regional Distribution</h3>
-                </div>
-                <canvas id="regionChart"></canvas>
-            </div>
-        </div>
+        <div id="meCardContainer"></div>
 
         <div class="layout-main">
             <div class="content-area">
@@ -371,8 +351,6 @@
             if (meIndex === -1) return;
 
             const me = allData[meIndex];
-            const globalRank = meIndex + 1;
-            
             const compPosts = allData.filter(p => (p.is_competition || p.id.includes(HIGHLIGHT_ID)));
             const compRank = compPosts.findIndex(p => p.id && p.id.includes(HIGHLIGHT_ID)) + 1;
 
@@ -384,18 +362,19 @@
             const topPost = compPosts[0];
             const topForecasted = Math.round(topPost.likes_count + (topPost.velocity * daysLeft));
             
-            // Scaled Win Probability
-            let winProb = 0;
-            if (compRank === 1) {
-                winProb = me.velocity >= topPost.velocity ? 98 : 85;
-            } else {
-                const veloRatio = me.velocity / (topPost.velocity || 1);
-                const scoreRatio = me.likes_count / topPost.likes_count;
-                winProb = Math.round((veloRatio * 60) + (scoreRatio * 30));
-            }
-            winProb = Math.min(99, Math.max(5, winProb));
+            // Safe Win Buffer Calculation
+            // We want to be at least 10 likes or 5% (whichever is higher) ahead of the top competitor's forecast
+            const safetyMargin = Math.max(10, Math.round(topForecasted * 0.05));
+            const safeTarget = topForecasted + safetyMargin;
+            const safeBufferNeeded = Math.max(0, safeTarget - me.likes_count);
+            const dailySafeAdd = (safeBufferNeeded / daysLeft).toFixed(1);
 
-            const targetVelo = ((topForecasted - me.likes_count) / daysLeft).toFixed(1);
+            // Win Probability logic
+            const veloRatio = me.velocity / (topPost.velocity || 0.1);
+            const scoreRatio = me.likes_count / topPost.likes_count;
+            let winProb = Math.round((veloRatio * 60) + (scoreRatio * 30));
+            if (compRank === 1) winProb = me.velocity >= topPost.velocity ? 98 : 85;
+            winProb = Math.min(99, Math.max(5, winProb));
 
             const container = document.getElementById('meCardContainer');
             container.innerHTML = `
@@ -404,37 +383,31 @@
                         <div class="rank-main">
                             <div class="rank-badge">
                                 <span class="lbl">Rank</span>
-                                <span class="num">#${globalRank}</span>
+                                <span class="num">#${compRank}</span>
                             </div>
                             <div class="rank-info">
                                 <h2>${me.title}</h2>
-                                <p>Current Speed: <strong style="color:var(--green)">${me.velocity || 0} likes/day</strong></p>
-                                <p style="margin-top:8px; font-size:12px; opacity:0.8; display:flex; gap:8px; align-items:center">
-                                    <span class="tag-region">${me.region || 'Global'}</span>
-                                    <span>&middot;</span>
-                                    <span>ID: ${me.id.substring(0,8)}</span>
-                                </p>
+                                <p style="color:var(--accent); font-weight:700">Currently #${compRank} in Competition</p>
+                                <p style="margin-top:4px; font-size:13px; color:var(--text-dim)">Global Rank: #${meIndex + 1} &middot; Speed: <strong style="color:var(--green)">${me.velocity || 0} likes/day</strong></p>
                             </div>
                         </div>
                         <div class="comp-comparison">
                             <div class="comp-row">
-                                <span class="comp-lbl">🏆 AIdeas Leaderboard</span>
-                                <span class="comp-val">#${compRank} OF ${compPosts.length}</span>
-                            </div>
-                            <div class="comp-row">
-                                <span class="comp-lbl">🔭 March 13 Forecast</span>
+                                <span class="comp-lbl">🔭 Forecasted Final</span>
                                 <span class="comp-val">~${forecasted} LIKES</span>
                             </div>
                             <div class="comp-row">
-                                <span class="comp-lbl">🔥 Win Probability</span>
-                                <span class="comp-val" style="color:${winProb > 70 ? 'var(--green)' : winProb > 40 ? 'var(--accent)' : 'var(--purple)'}">${winProb}%</span>
+                                <span class="comp-lbl">🛡️ Safe-Win Buffer</span>
+                                <span class="comp-val" style="color:var(--green)">+${safeBufferNeeded} LIKES NEEDED</span>
                             </div>
-                            ${compRank > 1 ? `
+                            <div class="comp-row">
+                                <span class="comp-lbl">🔥 Win Probability</span>
+                                <span class="comp-val" style="color:${winProb > 75 ? 'var(--green)' : 'var(--accent)'}">${winProb}%</span>
+                            </div>
                             <div class="climb-tip">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="m13 17 5-5-5-5"></path><path d="M6 17 11 12 6 7"></path></svg>
-                                <span>Target: <strong>${targetVelo} likes/day</strong> to reach #1 by Mar 13</span>
+                                <span>Add <strong>${dailySafeAdd} likes/day</strong> to guarantee #1 by Mar 13</span>
                             </div>
-                            ` : '<div class="climb-tip" style="color:var(--accent); border-color:var(--accent-glow)">✨ PROJECT IS CURRENTLY PACING FOR GOLD!</div>'}
                         </div>
                     </div>
                 </div>
