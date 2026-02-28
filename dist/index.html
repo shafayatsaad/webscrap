@@ -403,6 +403,12 @@
             document.getElementById('sideStatAuth').textContent = new Set(allData.map(p => p.author_alias)).size;
             document.getElementById('sideStatVelo').textContent = avgVelo.toFixed(2);
 
+            // Update Tab Labels with Counts
+            const compBtn = document.querySelector('button[onclick*="\'comp\'"]');
+            const allBtn = document.querySelector('button[onclick*="\'all\'"]');
+            if (compBtn) compBtn.textContent = `Competition Leaderboard (${compItems.length})`;
+            if (allBtn) allBtn.textContent = `Global Feed (${total})`;
+
             const topVelo = [...allData].sort((a,b) => b.velocity - a.velocity).slice(0, 5);
             document.getElementById('velocityList').innerHTML = topVelo.map(p => `
                 <div class="side-row">
@@ -417,7 +423,10 @@
             if (meIndex === -1) return;
 
             const me = allData[meIndex];
-            const compPosts = allData.filter(p => (p.is_competition || p.id.includes(HIGHLIGHT_ID)));
+            const compPosts = [...allData].filter(p => p.is_competition);
+            // Sort by likes FIRST before finding rank
+            compPosts.sort((a,b) => (b.likes_count || 0) - (a.likes_count || 0));
+            
             const compRank = compPosts.findIndex(p => p.id && p.id.includes(HIGHLIGHT_ID)) + 1;
 
             // Prediction logic
@@ -546,15 +555,17 @@
             const daysLeft = Math.max(0.1, (COMPETITION_END - now) / 86400000);
 
             list.innerHTML = data.slice(0, 100).map((p, idx) => {
-                const globalRank = allData.indexOf(p) + 1;
                 const isMe = p.id && p.id.includes(HIGHLIGHT_ID);
-                const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
-                const forecast = Math.round(p.likes_count + (p.velocity * daysLeft));
                 const region = p.region || 'Global';
+                
+                // Display Rank: Loop index + 1 for clean relative ranking (1, 2, 3...)
+                const displayRank = idx + 1;
+                const medal = displayRank === 1 ? '🥇' : displayRank === 2 ? '🥈' : displayRank === 3 ? '🥉' : displayRank;
+                const forecast = Math.round(p.likes_count + (p.velocity * daysLeft));
 
                 return `
                     <a href="${p.url || '#'}" target="_blank" class="rank-item ${isMe ? 'highlighted' : ''}">
-                        <div class="item-rank" ${globalRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
+                        <div class="item-rank" ${displayRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
                         <div class="item-content">
                             <span class="item-title" style="display:flex; align-items:center, gap:8px">
                                 ${p.title}
