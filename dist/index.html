@@ -296,7 +296,6 @@
 
                 updateStats();
                 renderMeCard();
-                renderCharts();
                 applyFilters();
                 startRefreshCountdown();
             } catch (e) {
@@ -414,90 +413,6 @@
             `;
         }
 
-        function renderCharts() {
-            const compItems = allData.filter(p => p.is_competition).slice(0, 10);
-            const palette = ['#F59E0B', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#06B6D4', '#F43F5E', '#84CC16', '#A855F7', '#64748B'];
-            
-            // Velocity Chart
-            const ctxVelo = document.getElementById('veloChart').getContext('2d');
-            new Chart(ctxVelo, {
-                type: 'bar',
-                data: {
-                    labels: compItems.map(p => p.title.length > 15 ? p.title.substring(0, 12) + '...' : p.title),
-                    datasets: [{
-                        label: 'Velocity',
-                        data: compItems.map(p => p.velocity),
-                        backgroundColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(255, 255, 255, 0.1)'),
-                        borderColor: compItems.map(p => (p.id && p.id.includes(HIGHLIGHT_ID)) ? '#ff9900' : 'rgba(255, 255, 255, 0.2)'),
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#4b5563', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 9 } } }
-                    }
-                }
-            });
-
-            // Space Breakdown Chart
-            const ctxSpace = document.getElementById('spaceChart').getContext('2d');
-            const spaces = {};
-            allData.filter(p => p.is_competition).forEach(p => {
-                const s = p.space_name || 'General';
-                spaces[s] = (spaces[s] || 0) + 1;
-            });
-            new Chart(ctxSpace, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(spaces),
-                    datasets: [{
-                        data: Object.values(spaces),
-                        backgroundColor: palette,
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10, font: { size: 9 } } }
-                    },
-                    cutout: '75%'
-                }
-            });
-
-            // Region Breakdown Chart
-            const ctxRegion = document.getElementById('regionChart').getContext('2d');
-            const regions = {};
-            allData.filter(p => p.is_competition).forEach(p => {
-                const r = p.region || 'Global';
-                regions[r] = (regions[r] || 0) + 1;
-            });
-            
-            new Chart(ctxRegion, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(regions),
-                    datasets: [{
-                        data: Object.values(regions),
-                        backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#eab308', '#22c55e', '#94a3b8'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10, font: { size: 9 } } }
-                    },
-                    cutout: '75%'
-                }
-            });
-        }
-
         function setTab(tab, el) {
             currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -537,16 +452,19 @@
                 const isMe = p.id && p.id.includes(HIGHLIGHT_ID);
                 const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
                 const forecast = Math.round(p.likes_count + (p.velocity * daysLeft));
+                const region = p.region || 'Global';
 
                 return `
                     <a href="${p.url || '#'}" target="_blank" class="rank-item ${isMe ? 'highlighted' : ''}">
                         <div class="item-rank" ${globalRank <= 3 ? 'style="color:#fff"' : ''}>${medal}</div>
                         <div class="item-content">
-                            <span class="item-title">${p.title}</span>
+                            <span class="item-title" style="display:flex; align-items:center, gap:8px">
+                                ${p.title}
+                                <span class="tag-region" style="background:var(--accent); color:#000; font-weight:800; font-size:10px; padding:2px 6px; border-radius:4px">${region}</span>
+                            </span>
                             <div class="item-sub">
                                 <span style="font-weight:700; color:var(--text-dim)">${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
-                                ${p.region ? `<span class="tag-region">${p.region}</span>` : ''}
-                                ${p.is_competition ? '<span class="tag-comp">AIdeas</span>' : ''}
+                                ${p.is_competition ? '<span class="tag-comp" style="background:var(--purple); color:#fff">AIdeas</span>' : ''}
                                 <span class="tag-velocity">⚡ ${p.velocity || 0} v/d</span>
                                 <span style="font-size:9px; opacity:0.6">${p.created_at.split(' ')[0]}</span>
                             </div>
@@ -554,7 +472,7 @@
                         <div class="item-likes">
                             <span class="likes-num">${p.likes_count}</span>
                             <span class="likes-lbl">Likes</span>
-                            <span class="forecast-num" title="Predicted likes by Mar 13">🔭 ~${forecast}</span>
+                            <span class="forecast-num" title="Predicted likes by Mar 13" style="color:var(--accent)">🔭 ~${forecast}</span>
                         </div>
                     </a>
                 `;
