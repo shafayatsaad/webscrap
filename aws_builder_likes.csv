@@ -1,4 +1,5 @@
 rank,id,title,content_type,likes_count,comments_count,created_at,last_published_at,author_alias,author_name,url
+<<<<<<< HEAD
 1,/content/33WsvjQXstKo9LjQzVdge85k1DQ,My Rift Rewind Challenge Journey,ARTICLE,356,4,2025-11-25 05:10:03,2025-10-03 04:44:19,abdelhamed4a,Abdel-Hamed Abdel-Nasser,https://builder.aws.com/content/33WsvjQXstKo9LjQzVdge85k1DQ
 2,/content/37725RqKY4yiuV7DBnAa1NNVohi,Building Sharp Shooter: How Kiro AI Accelerated Game Development by 10x,ARTICLE,223,148,2025-12-22 14:33:56,2025-12-20 22:23:00,eng2code,Developer himal,https://builder.aws.com/content/37725RqKY4yiuV7DBnAa1NNVohi
 3,/content/39r5tBjE41RulwEbwsRvb0hRf87,AIdeas: AuraTwin  AI Infrastructure Safety from Your Phone,ARTICLE,216,87,2026-02-19 17:11:14,2026-02-19 05:28:28,ayushdevx,Ayush Upadhyay,https://builder.aws.com/content/39r5tBjE41RulwEbwsRvb0hRf87
@@ -4226,3 +4227,15 @@ by Chaitanya Gupta | AI for Bharat – Hack2Skill",ARTICLE,0,0,2025-11-27 02:02:
 4125,/content/33PtQfFra5ps61s40y9PSBnRDkL,Building the Brains: Crafting a Customer Support Agent with Strands,ARTICLE,0,0,2025-09-30 17:08:39,2025-09-30 17:11:50,marklaszlo,Mark Laszlo,https://builder.aws.com/content/33PtQfFra5ps61s40y9PSBnRDkL
 4126,/content/33Jq1qUeQHA7dJhttED0SWEb07C,My Experience at AWS Community Day Malaysia 2025,ARTICLE,0,0,2025-09-28 13:41:50,2025-09-30 16:47:35,ibrahimcisse,Ibrahim Cisse ,https://builder.aws.com/content/33Jq1qUeQHA7dJhttED0SWEb07C
 4127,/content/33PnQU0gmSChxgmgAynCHyEZWFE,PostgreSQL on AWS,ARTICLE,0,0,2025-09-30 16:19:18,2025-09-30 16:34:29,toemullen,Tony Mullen,https://builder.aws.com/content/33PnQU0gmSChxgmgAynCHyEZWFE
+=======
+1,/content/3AAMRb7lRzAJnleldfYBBtfM1WG,AIdeas: Transforming Healthcare into AI powered Wellness Companion,ARTICLE,118,64,2026-02-28 10:19:47,2026-02-25 23:37:00,saad30,Shafayat Saad,https://builder.aws.com
+2,/content/3A05mRhLyFXg9xFzukWQj4AOvXX,AIdeas: MindBridge AI,ARTICLE,71,30,2026-02-21 23:49:08,2026-02-21 23:34:07,sushmagurunule,Sushma Gurunule,https://builder.aws.com
+3,/content/3A22NGhiEao2qxdd2Np4qCzahUV,AIdeas: Project Anukriti,ARTICLE,64,61,2026-02-24 15:43:26,2026-02-23 16:33:41,abhimanyurb,Abhimanyu,https://builder.aws.com
+4,/content/3AHjLzkE2LSQhq4wrQXR7O9mBbW,Devsparks,ARTICLE,37,8,2026-02-28 05:25:37,2026-02-28 05:26:50,adityarokade90,Aditya Rokade,https://builder.aws.com
+5,/content/3AFEHrVf0iugHBclfZGPGDGAfm0,How to Run a Kiro AI Coding Workshop That Actually Works,ARTICLE,20,7,2026-02-27 09:26:11,2026-02-27 09:16:06,cremich,Christian Bonzelet,https://builder.aws.com
+6,/content/3AAxqZdFuNaiEWCZIiVYlpbt3ml,RAG vs GraphRAG: When Agents Hallucinate Answers,ARTICLE,15,1,2026-02-27 15:23:07,2026-02-27 15:21:21,elizabethfuentes12,Elizabeth Fuentes,https://builder.aws.com
+7,/content/3AEcQ8xpKNWaEf4qcjbybqXtQnq,AIdeas: Xycle — A Living Intelligence Platform,ARTICLE,7,4,2026-02-28 07:48:36,2026-02-28 02:25:38,control77,Malik Badmus,https://builder.aws.com
+8,/content/3AHsKm4focPUrR2lUvJxtd0PiMQ,GarAI: Building an AI Virtual Assistant on AWS to Solve Real-World Problems,ARTICLE,3,1,2026-02-28 07:03:30,2026-02-28 06:42:26,smiit8999,Orange Glazz,https://builder.aws.com
+9,/content/3AHH3NeXLe3lmMeaEoXosI2jPY4,AIdeas: Workscale AI - Multi Agent Workforce Intelligence,ARTICLE,3,0,2026-02-28 01:32:55,2026-02-28 06:08:42,bondwit,Bharath,https://builder.aws.com
+10,/content/3AHukoaw1xXei9JDoOnhDx58bFb,aws-Cronos,ARTICLE,1,1,2026-02-28 07:12:39,2026-02-28 07:05:00,sachinkhisti,Sachin Khisti,https://builder.aws.com
+>>>>>>> 96b3338bbff8e9cc51673a599bd5c4dce97af158
