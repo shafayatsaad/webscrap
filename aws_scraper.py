@@ -53,21 +53,19 @@ COMPETITION_START_TIMESTAMP = datetime.strptime(COMPETITION_START_DATE, "%Y-%m-%
 HIGHLIGHT_POST_URI = "/content/3AAMRb7lRzAJnleldfYBBtfM1WG/aideas-transforming-healthcare-into-ai-powered-wellness-companion"
 
 # Competition keywords to identify related posts
+# Reduced to high-intent markers only to avoid mixing unrelated posts
 COMPETITION_KEYWORDS = [
-    "AIdeas", "AI ideas", "healthcare", "wellness", "competition",
-    "Kiro", "Mimamori", "wellness companion", "AI-powered wellness",
-    "wellness avatar", "health AI", "medical AI", "10,000", "10000",
-    "AWS Competition", "Ideathon"
+    "AIdeas", "AWS 10,000", "AWS 10000", "Ideathon", "aideas-2025"
 ]
 
 
-def is_competition_post(post):
+def is_competition_post(post, raw_item=None):
     """Determine if a post is related to the competition."""
     title = (post.get("title", "") or "").lower()
     uri = (post.get("id", "") or "").lower()
     content_id = (post.get("content_id", "") or "").lower()
 
-    # Check highlight post first
+    # Check highlight post first (Explicit ID match)
     if HIGHLIGHT_POST_URI and (
         HIGHLIGHT_POST_URI.lower() in uri
         or HIGHLIGHT_POST_URI.lower() in content_id
@@ -75,11 +73,18 @@ def is_competition_post(post):
     ):
         return True
 
-    # Check keywords in title
+    # 1. Check title for high-intent keywords
     for kw in COMPETITION_KEYWORDS:
         if kw.lower() in title:
             return True
 
+    # 2. Deep tag check if raw_item is provided
+    if raw_item:
+        article_data = raw_item.get("contentTypeSpecificResponse", {}).get("article", {})
+        tags = [str(t).lower() for t in article_data.get("tags", [])]
+        if "aideas-2025" in tags or "aws-10000-ideas" in tags:
+            return True
+            
     return False
 
 
@@ -298,7 +303,7 @@ def fetch_all_posts(session, content_type):
                 "author_name": (item.get("author", {}) or {}).get("preferredName", "N/A"),
                 "space_name": item.get("spaceName"),
             }
-            post_data["is_competition"] = is_competition_post(post_data)
+            post_data["is_competition"] = is_competition_post(post_data, raw_item=item)
             all_posts.append(post_data)
 
         print_info(f"  Page {page}: {page_new_count} new items (total: {len(all_posts)})")
