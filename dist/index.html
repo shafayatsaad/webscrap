@@ -176,13 +176,26 @@
     <div id="overlay">
         <div class="loader"></div>
         <p style="font-weight: 800; letter-spacing: 0.5px">SYNCING COMPETITION DATA...</p>
+        <div style="margin-top: 10px; font-size: 11px; color: var(--text-mute); font-weight: 600;">
+            Developed by <span style="color:var(--accent)">Shafayat Saad</span>
+        </div>
     </div>
 
     <div class="container" id="main" style="display: none">
         <header>
             <div class="logo-area">
                 <h1>AIdeas Analyzer</h1>
-                <p><span class="live-indicator"></span> Tracking AWS 10,000 AIdeas Competition</p>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                    <p style="margin:0"><span class="live-indicator"></span> Tracking AWS 10,000 AIdeas</p>
+                    <div style="display: flex; gap: 8px; border-left: 1px solid var(--border); padding-left: 12px;">
+                        <a href="https://github.com/shafayatsaad" target="_blank" style="color: var(--text-mute); transition: color 0.2s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-mute)'">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        </a>
+                        <a href="https://twitter.com/shafayatsaad" target="_blank" style="color: var(--text-mute); transition: color 0.2s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-mute)'">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="header-actions">
                 <div class="countdown-container">
@@ -268,7 +281,17 @@
         </div>
 
         <footer>
-            Prepared for <strong>Shafayat Saad</strong> &middot; Competition timeframe starts Februrary 11, 2026 &middot; <a href="https://github.com/shafayatsaad/webscrap" target="_blank">View Project</a>
+            <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 20px;">
+                <a href="https://github.com/shafayatsaad" target="_blank">GITHUB</a>
+                <a href="https://twitter.com/shafayatsaad" target="_blank">TWITTER</a>
+                <a href="https://linkedin.com/in/shafayatsaad" target="_blank">LINKEDIN</a>
+            </div>
+            <div style="opacity: 0.7">
+                Developed by <strong>Shafayat Saad</strong> &middot; Competition timeframe starts <span style="color:var(--accent)">February 11, 2026</span>
+            </div>
+            <div style="margin-top: 8px; font-size: 10px; color: var(--text-dim)">
+                Automatically syncs every 15 minutes via GitHub Actions
+            </div>
         </footer>
     </div>
 
@@ -279,10 +302,20 @@
         let currentTab = 'comp';
         let searchQuery = '';
 
+        let scrapedAt = "";
+
         async function init() {
             try {
                 const res = await fetch('aws_builder_likes.json?_=' + Date.now());
-                allData = await res.json();
+                const data = await res.json();
+                
+                // Handle new or old structure
+                if (data.posts) {
+                    allData = data.posts;
+                    scrapedAt = data.scraped_at;
+                } else {
+                    allData = data;
+                }
                 
                 // Sort by likes descending
                 allData.sort((a,b) => b.likes_count - a.likes_count);
@@ -305,11 +338,17 @@
             }
         }
 
+        function formatDate(iso) {
+            if (!iso || iso === "N/A") return "N/A";
+            try {
+                const d = new Date(iso);
+                return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            } catch(e) { return iso; }
+        }
+
         function updateStats() {
             const total = allData.length;
             const compItems = allData.filter(p => p.is_competition);
-            const totalLikes = allData.reduce((s, p) => s + (p.likes_count || 0), 0);
-            const compLikes = compItems.reduce((s, p) => s + (p.likes_count || 0), 0);
             const maxVelo = Math.max(...allData.map(p => p.velocity || 0));
             const avgVelo = allData.reduce((s, p) => s + (p.velocity || 0), 0) / total;
             
@@ -317,11 +356,11 @@
             document.getElementById('statComp').textContent = compItems.length;
             document.getElementById('statMaxVel').textContent = maxVelo.toFixed(1);
             
-            const now = new Date();
-            document.getElementById('statUpdate').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            // Show scraped time if available, otherwise browser time
+            const lastTime = scrapedAt ? formatDate(scrapedAt) : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('statUpdate').textContent = lastTime;
 
-            // Deadline Timer
-            const diff = COMPETITION_END - now;
+            const diff = COMPETITION_END - new Date();
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             document.getElementById('deadline-timer').textContent = `${days}D ${hours}H REMAINING`;
@@ -466,7 +505,7 @@
                                 <span style="font-weight:700; color:var(--text-dim)">${p.author_alias ? '@'+p.author_alias : 'Anonymous'}</span>
                                 ${p.is_competition ? '<span class="tag-comp" style="background:var(--purple); color:#fff">AIdeas</span>' : ''}
                                 <span class="tag-velocity">⚡ ${p.velocity || 0} v/d</span>
-                                <span style="font-size:9px; opacity:0.6">${p.created_at.split(' ')[0]}</span>
+                                <span style="font-size:9px; opacity:0.6">${formatDate(p.created_at)}</span>
                             </div>
                         </div>
                         <div class="item-likes">
