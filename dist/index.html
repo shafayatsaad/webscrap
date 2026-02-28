@@ -298,7 +298,7 @@
 
         async function init() {
             try {
-                const res = await fetch('data.json?_=' + Date.now());
+                const res = await fetch('aws_builder_likes.json?_=' + Date.now());
                 allData = await res.json();
                 
                 // Sort by likes descending
