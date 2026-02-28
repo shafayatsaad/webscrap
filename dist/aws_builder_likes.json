@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "scraped_at": "2026-02-28T21:16:19.651052+00:00",
+=======
+  "scraped_at": "2026-02-28T21:54:57.999473+00:00",
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
   "posts": [
     {
       "id": "/content/2zezptRayvl2YX1p0JIIhZlAPH8",
@@ -29,7 +33,11 @@
       "likes_count": 216,
       "comments_count": 88,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 22.93,
+=======
+      "velocity": 22.86,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771499474.789,
       "created_at": "2026-02-19T11:11:14.789000+00:00",
       "last_published_at": "2026-02-18T23:28:28.011000+00:00",
@@ -129,7 +137,11 @@
       "likes_count": 72,
       "comments_count": 34,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.62,
+=======
+      "velocity": 4.61,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1770966094.277,
       "created_at": "2026-02-13T07:01:34.277000+00:00",
       "last_published_at": "2026-02-22T17:20:41.464000+00:00",
@@ -149,7 +161,11 @@
       "likes_count": 71,
       "comments_count": 31,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 10.3,
+=======
+      "velocity": 10.26,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771717748.283,
       "created_at": "2026-02-21T23:49:08.283000+00:00",
       "last_published_at": "2026-02-21T23:34:07.793000+00:00",
@@ -169,7 +185,11 @@
       "likes_count": 66,
       "comments_count": 62,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 15.6,
+=======
+      "velocity": 15.5,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771947806.79,
       "created_at": "2026-02-24T15:43:26.790000+00:00",
       "last_published_at": "2026-02-23T16:33:41.709000+00:00",
@@ -189,7 +209,11 @@
       "likes_count": 60,
       "comments_count": 10,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 5.04,
+=======
+      "velocity": 5.03,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771284160.588,
       "created_at": "2026-02-16T23:22:40.588000+00:00",
       "last_published_at": "2026-02-18T12:27:25.920000+00:00",
@@ -209,7 +233,11 @@
       "likes_count": 52,
       "comments_count": 26,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 8.18,
+=======
+      "velocity": 8.14,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771763983.193,
       "created_at": "2026-02-22T12:39:43.193000+00:00",
       "last_published_at": "2026-02-21T06:04:22.224000+00:00",
@@ -229,7 +257,11 @@
       "likes_count": 50,
       "comments_count": 30,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.91,
+=======
+      "velocity": 4.9,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771434015.602,
       "created_at": "2026-02-18T17:00:15.602000+00:00",
       "last_published_at": "2026-02-23T14:09:06.891000+00:00",
@@ -249,7 +281,11 @@
       "likes_count": 50,
       "comments_count": 34,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 24.27,
+=======
+      "velocity": 23.95,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772135346.257,
       "created_at": "2026-02-26T19:49:06.257000+00:00",
       "last_published_at": "2026-02-17T22:32:44.823000+00:00",
@@ -269,7 +305,11 @@
       "likes_count": 45,
       "comments_count": 64,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 27.9,
+=======
+      "velocity": 27.44,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772174005.968,
       "created_at": "2026-02-27T06:33:25.968000+00:00",
       "last_published_at": "2026-02-23T05:15:01.345000+00:00",
@@ -289,7 +329,11 @@
       "likes_count": 42,
       "comments_count": 32,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.36,
+=======
+      "velocity": 4.35,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771480830.32,
       "created_at": "2026-02-19T06:00:30.320000+00:00",
       "last_published_at": "2026-02-20T20:40:40.775000+00:00",
@@ -409,7 +453,11 @@
       "likes_count": 30,
       "comments_count": 16,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.52,
+=======
+      "velocity": 4.5,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771739843.071,
       "created_at": "2026-02-22T05:57:23.071000+00:00",
       "last_published_at": "2026-02-24T15:01:47.427000+00:00",
@@ -429,7 +477,11 @@
       "likes_count": 30,
       "comments_count": 19,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 3.75,
+=======
+      "velocity": 3.74,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771622312.709,
       "created_at": "2026-02-20T21:18:32.709000+00:00",
       "last_published_at": "2026-02-26T14:32:41.578000+00:00",
@@ -469,7 +521,11 @@
       "likes_count": 28,
       "comments_count": 24,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.8,
+=======
+      "velocity": 4.78,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771809754.16,
       "created_at": "2026-02-23T01:22:34.160000+00:00",
       "last_published_at": "2026-02-22T23:32:26.782000+00:00",
@@ -489,7 +545,11 @@
       "likes_count": 28,
       "comments_count": 17,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 6.94,
+=======
+      "velocity": 6.9,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771964846.266,
       "created_at": "2026-02-24T20:27:26.266000+00:00",
       "last_published_at": "2026-02-13T20:09:42.200000+00:00",
@@ -529,7 +589,11 @@
       "likes_count": 27,
       "comments_count": 33,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 6.43,
+=======
+      "velocity": 6.39,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771950810.851,
       "created_at": "2026-02-24T16:33:30.851000+00:00",
       "last_published_at": "2026-02-22T04:38:51.700000+00:00",
@@ -589,7 +653,11 @@
       "likes_count": 24,
       "comments_count": 6,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 12.15,
+=======
+      "velocity": 11.98,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772142648.031,
       "created_at": "2026-02-26T21:50:48.031000+00:00",
       "last_published_at": "2026-02-23T08:09:48.243000+00:00",
@@ -622,6 +690,26 @@
       "is_competition": false
     },
     {
+      "id": "/content/2p8JPuM0rbgJqCLpxUWgLNe2Tq0",
+      "content_id": "/content/2p8JPuM0rbgJqCLpxUWgLNe2Tq0",
+      "title": "How I made the creepiest game of 2024 (according to my 10-year-old daughter)",
+      "content_type": "ARTICLE",
+      "likes_count": 24,
+      "comments_count": 5,
+      "views_count": null,
+      "velocity": 0.05,
+      "created_ts": 1732185183.303,
+      "created_at": "2024-11-21T10:33:03.303000+00:00",
+      "last_published_at": "2024-11-21T01:15:40.358000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2p8JPuM0rbgJqCLpxUWgLNe2Tq0",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "basilfateen",
+      "author_name": "Basil Fateen",
+      "is_competition": false
+    },
+    {
       "id": "/content/3A2donG56UEkNpzuma7fRqX0LpT",
       "content_id": "/content/3A2donG56UEkNpzuma7fRqX0LpT",
       "title": "AIdeas: MeetingMind",
@@ -629,7 +717,11 @@
       "likes_count": 23,
       "comments_count": 15,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 3.85,
+=======
+      "velocity": 3.84,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771797612.991,
       "created_at": "2026-02-22T22:00:12.991000+00:00",
       "last_published_at": "2026-02-22T21:47:55.103000+00:00",
@@ -649,7 +741,11 @@
       "likes_count": 23,
       "comments_count": 16,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.46,
+=======
+      "velocity": 4.44,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771868135.212,
       "created_at": "2026-02-23T17:35:35.212000+00:00",
       "last_published_at": "2026-02-18T18:40:20.186000+00:00",
@@ -669,7 +765,11 @@
       "likes_count": 22,
       "comments_count": 6,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 4.24,
+=======
+      "velocity": 4.22,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771865543.003,
       "created_at": "2026-02-23T16:52:23.003000+00:00",
       "last_published_at": "2026-02-24T20:56:49.141000+00:00",
@@ -689,7 +789,11 @@
       "likes_count": 20,
       "comments_count": 9,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 13.39,
+=======
+      "velocity": 13.16,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772184371.223,
       "created_at": "2026-02-27T09:26:11.223000+00:00",
       "last_published_at": "2026-02-27T09:16:06.751000+00:00",
@@ -769,7 +873,11 @@
       "likes_count": 17,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 7.04,
+=======
+      "velocity": 6.96,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772104666.816,
       "created_at": "2026-02-26T11:17:46.816000+00:00",
       "last_published_at": "2026-02-20T09:29:38.577000+00:00",
@@ -809,7 +917,11 @@
       "likes_count": 16,
       "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 12.85,
+=======
+      "velocity": 12.58,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772205787.679,
       "created_at": "2026-02-27T15:23:07.679000+00:00",
       "last_published_at": "2026-02-27T15:21:21.704000+00:00",
@@ -949,7 +1061,11 @@
       "likes_count": 14,
       "comments_count": 4,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 3.27,
+=======
+      "velocity": 3.25,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771943018.512,
       "created_at": "2026-02-24T14:23:38.512000+00:00",
       "last_published_at": "2026-02-25T03:59:25.824000+00:00",
@@ -1022,6 +1138,46 @@
       "is_competition": false
     },
     {
+      "id": "/content/2zeZNMGcgW2sVMoXb7U80hH8kBw",
+      "content_id": "/content/2zeZNMGcgW2sVMoXb7U80hH8kBw",
+      "title": "👻 Kiro Agentic AI IDE: Beyond a Coding Assistant - Full Stack Software Development with Spec Driven AI",
+      "content_type": "ARTICLE",
+      "likes_count": 13,
+      "comments_count": 1,
+      "views_count": null,
+      "velocity": 0.06,
+      "created_ts": 1753845895.466,
+      "created_at": "2025-07-30T03:24:55.466000+00:00",
+      "last_published_at": "2025-07-14T15:01:45.384000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2zeZNMGcgW2sVMoXb7U80hH8kBw",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "vivekv",
+      "author_name": "Vivek V [AWS Hero]",
+      "is_competition": false
+    },
+    {
+      "id": "/content/39n9nqyff6Ika9Q66J73ZCyLINQ",
+      "content_id": "/content/39n9nqyff6Ika9Q66J73ZCyLINQ",
+      "title": "AIdeas: NearChat — An Offline Bluetooth Messaging App for When There’s No Service",
+      "content_type": "ARTICLE",
+      "likes_count": 12,
+      "comments_count": 5,
+      "views_count": null,
+      "velocity": 12.0,
+      "created_ts": 1772288295.805,
+      "created_at": "2026-02-28T14:18:15.805000+00:00",
+      "last_published_at": "2026-02-22T17:14:40.422000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/39n9nqyff6Ika9Q66J73ZCyLINQ",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "johnigwe1",
+      "author_name": "John Igwebuike",
+      "is_competition": true
+    },
+    {
       "id": "/content/38NpLC4UHVRGQvyHP1uZJEaWBVp",
       "content_id": "/content/38NpLC4UHVRGQvyHP1uZJEaWBVp",
       "title": "AIdeas: RiceGuard AI",
@@ -1089,7 +1245,11 @@
       "likes_count": 11,
       "comments_count": 16,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 2.73,
+=======
+      "velocity": 2.71,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771965566.85,
       "created_at": "2026-02-24T20:39:26.850000+00:00",
       "last_published_at": "2026-02-17T21:02:24.488000+00:00",
@@ -1209,7 +1369,11 @@
       "likes_count": 10,
       "comments_count": 10,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.83,
+=======
+      "velocity": 1.82,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771842023.666,
       "created_at": "2026-02-23T10:20:23.666000+00:00",
       "last_published_at": "2026-02-23T12:34:09.081000+00:00",
@@ -1469,7 +1633,11 @@
       "likes_count": 8,
       "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.66,
+=======
+      "velocity": 1.65,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771895778.302,
       "created_at": "2026-02-24T01:16:18.302000+00:00",
       "last_published_at": "2026-02-24T02:03:39.786000+00:00",
@@ -1529,7 +1697,11 @@
       "likes_count": 7,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 2.69,
+=======
+      "velocity": 2.66,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772088253.997,
       "created_at": "2026-02-26T06:44:13.997000+00:00",
       "last_published_at": "2026-02-26T06:42:05.412000+00:00",
@@ -1549,7 +1721,11 @@
       "likes_count": 7,
       "comments_count": 5,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 2.27,
+=======
+      "velocity": 2.25,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772047177.753,
       "created_at": "2026-02-25T19:19:37.753000+00:00",
       "last_published_at": "2026-02-25T18:55:27.368000+00:00",
@@ -1569,7 +1745,11 @@
       "likes_count": 7,
       "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.51,
+=======
+      "velocity": 1.5,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771912228.428,
       "created_at": "2026-02-24T05:50:28.428000+00:00",
       "last_published_at": "2026-02-24T05:49:12.613000+00:00",
@@ -1762,6 +1942,49 @@
       "is_competition": false
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "/content/2y6XQVt601LaNN4i8CvDi4WTbhN",
+      "content_id": "/content/2y6XQVt601LaNN4i8CvDi4WTbhN",
+      "title": "Security checks using Amazon Q Developer CLI",
+      "content_type": "ARTICLE",
+      "likes_count": 7,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.06,
+      "created_ts": 1761813039.068,
+      "created_at": "2025-10-30T08:30:39.068000+00:00",
+      "last_published_at": "2025-07-01T18:44:31.305000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2y6XQVt601LaNN4i8CvDi4WTbhN",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "pgillier",
+      "author_name": "Pierre-Yves Gillier",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2viCbhe5vZ8hD7DMI1h2SlxUnwn",
+      "content_id": "/content/2viCbhe5vZ8hD7DMI1h2SlxUnwn",
+      "title": "Amazon Nova Act First Look",
+      "content_type": "ARTICLE",
+      "likes_count": 7,
+      "comments_count": 1,
+      "views_count": null,
+      "velocity": 0.02,
+      "created_ts": 1745027655.553,
+      "created_at": "2025-04-19T01:54:15.553000+00:00",
+      "last_published_at": "2025-04-19T01:51:09.377000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2viCbhe5vZ8hD7DMI1h2SlxUnwn",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "kshmorrison",
+      "author_name": "Kevin Shaffer-Morrison",
+      "is_competition": false
+    },
+    {
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "id": "/content/3AAum3PluqFcecRAciSVEYiJZdu",
       "content_id": "/content/3AAum3PluqFcecRAciSVEYiJZdu",
       "title": "I Built an IRT-Powered AI Study Coach on Amazon Nova",
@@ -1769,7 +1992,11 @@
       "likes_count": 6,
       "comments_count": 4,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 5.44,
+=======
+      "velocity": 5.31,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772218097.228,
       "created_at": "2026-02-27T18:48:17.228000+00:00",
       "last_published_at": "2026-02-25T20:39:37.575000+00:00",
@@ -1789,7 +2016,11 @@
       "likes_count": 6,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.23,
+=======
+      "velocity": 1.22,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771891215.356,
       "created_at": "2026-02-24T00:00:15.356000+00:00",
       "last_published_at": "2026-02-23T23:56:53.790000+00:00",
@@ -1809,7 +2040,11 @@
       "likes_count": 6,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.99,
+=======
+      "velocity": 0.98,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771788735.998,
       "created_at": "2026-02-22T19:32:15.998000+00:00",
       "last_published_at": "2026-02-23T12:58:48.107000+00:00",
@@ -1822,6 +2057,29 @@
       "is_competition": false
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "/content/39oj1TYENzL5OHpLjVOl4fymQrf",
+      "content_id": "/content/39oj1TYENzL5OHpLjVOl4fymQrf",
+      "title": "AIdeas: WorldWisp - Turning Daily Walks into Creature Collection Adventures",
+      "content_type": "ARTICLE",
+      "likes_count": 6,
+      "comments_count": 5,
+      "views_count": null,
+      "velocity": 0.55,
+      "created_ts": 1771369102.866,
+      "created_at": "2026-02-17T22:58:22.866000+00:00",
+      "last_published_at": "2026-02-24T15:06:23.563000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/39oj1TYENzL5OHpLjVOl4fymQrf",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "harukary7518",
+      "author_name": "harukary",
+      "is_competition": true
+    },
+    {
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "id": "/content/39zTw0xDzoImPJnxjzLiyXPcVm5",
       "content_id": "/content/39zTw0xDzoImPJnxjzLiyXPcVm5",
       "title": "AIdeas: SomniLens — AI Sleep Assistant That Finds What Keeps You Awake",
@@ -2022,26 +2280,6 @@
       "is_competition": false
     },
     {
-      "id": "/content/39oj1TYENzL5OHpLjVOl4fymQrf",
-      "content_id": "/content/39oj1TYENzL5OHpLjVOl4fymQrf",
-      "title": "AIdeas: WorldWisp - Turning Daily Walks into Creature Collection Adventures",
-      "content_type": "ARTICLE",
-      "likes_count": 5,
-      "comments_count": 4,
-      "views_count": null,
-      "velocity": 0.46,
-      "created_ts": 1771369102.866,
-      "created_at": "2026-02-17T22:58:22.866000+00:00",
-      "last_published_at": "2026-02-24T15:06:23.563000+00:00",
-      "uri": "",
-      "url": "https://builder.aws.com/content/39oj1TYENzL5OHpLjVOl4fymQrf",
-      "status": "live",
-      "region": "Global",
-      "author_alias": "harukary7518",
-      "author_name": "harukary",
-      "is_competition": true
-    },
-    {
       "id": "/content/39wVgeSpTy73LV86S9X5uXLydeS",
       "content_id": "/content/39wVgeSpTy73LV86S9X5uXLydeS",
       "title": "I Promised an iOS App. Kiro CLI and Xcode MCP Built It in Hours.",
@@ -2060,6 +2298,26 @@
       "author_alias": "vivekv",
       "author_name": "Vivek V [AWS Hero]",
       "is_competition": false
+    },
+    {
+      "id": "/content/39u7gzkwrhYvb36qY55jq2AWFLl",
+      "content_id": "/content/39u7gzkwrhYvb36qY55jq2AWFLl",
+      "title": "AIdeas: NewEden – Turning Care Records into Faster Funding Decisions with AI",
+      "content_type": "ARTICLE",
+      "likes_count": 5,
+      "comments_count": 2,
+      "views_count": null,
+      "velocity": 2.01,
+      "created_ts": 1772100981.37,
+      "created_at": "2026-02-26T10:16:21.370000+00:00",
+      "last_published_at": "2026-02-21T11:45:36.487000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/39u7gzkwrhYvb36qY55jq2AWFLl",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "richiediamond",
+      "author_name": "Richard Ogundele",
+      "is_competition": true
     },
     {
       "id": "/content/39vKbWSFksHLLn0jDBv5bxNjDK6",
@@ -2289,7 +2547,11 @@
       "likes_count": 4,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.0,
+=======
+      "velocity": 0.99,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771966433.223,
       "created_at": "2026-02-24T20:53:53.223000+00:00",
       "last_published_at": "2026-02-24T21:03:03.284000+00:00",
@@ -2329,7 +2591,11 @@
       "likes_count": 4,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.69,
+=======
+      "velocity": 1.67,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772108540.979,
       "created_at": "2026-02-26T12:22:20.979000+00:00",
       "last_published_at": "2026-02-26T12:17:41.479000+00:00",
@@ -2369,7 +2635,11 @@
       "likes_count": 4,
       "comments_count": 5,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.81,
+=======
+      "velocity": 0.8,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771884130.926,
       "created_at": "2026-02-23T22:02:10.926000+00:00",
       "last_published_at": "2026-02-19T20:58:22.462000+00:00",
@@ -2382,23 +2652,30 @@
       "is_competition": true
     },
     {
-      "id": "/content/39u7gzkwrhYvb36qY55jq2AWFLl",
-      "content_id": "/content/39u7gzkwrhYvb36qY55jq2AWFLl",
-      "title": "AIdeas: NewEden – Turning Care Records into Faster Funding Decisions with AI",
+      "id": "/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
+      "content_id": "/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
+      "title": "AIdeas: MemoryBridge",
       "content_type": "ARTICLE",
       "likes_count": 4,
-      "comments_count": 1,
+      "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.63,
       "created_ts": 1772100981.37,
       "created_at": "2026-02-26T10:16:21.370000+00:00",
       "last_published_at": "2026-02-21T11:45:36.487000+00:00",
+=======
+      "velocity": 4.0,
+      "created_ts": 1772283348.267,
+      "created_at": "2026-02-28T12:55:48.267000+00:00",
+      "last_published_at": "2026-02-20T00:51:10.167000+00:00",
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "uri": "",
-      "url": "https://builder.aws.com/content/39u7gzkwrhYvb36qY55jq2AWFLl",
+      "url": "https://builder.aws.com/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
       "status": "live",
       "region": "Global",
-      "author_alias": "richiediamond",
-      "author_name": "Richard Ogundele",
+      "author_alias": "aoki9uhuru",
+      "author_name": "Takao AOKI",
       "is_competition": true
     },
     {
@@ -2469,7 +2746,11 @@
       "likes_count": 4,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.11,
+=======
+      "velocity": 1.1,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772001652.419,
       "created_at": "2026-02-25T06:40:52.419000+00:00",
       "last_published_at": "2026-02-19T16:24:10.106000+00:00",
@@ -3069,7 +3350,11 @@
       "likes_count": 3,
       "comments_count": 3,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 2.09,
+=======
+      "velocity": 2.05,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772189224.038,
       "created_at": "2026-02-27T10:47:04.038000+00:00",
       "last_published_at": "2026-02-28T11:04:07.625000+00:00",
@@ -3109,7 +3394,11 @@
       "likes_count": 3,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.12,
+=======
+      "velocity": 1.11,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772082563.494,
       "created_at": "2026-02-26T05:09:23.494000+00:00",
       "last_published_at": "2026-02-26T05:50:57.674000+00:00",
@@ -3169,7 +3458,11 @@
       "likes_count": 3,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.86,
+=======
+      "velocity": 0.85,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772011372.026,
       "created_at": "2026-02-25T09:22:52.026000+00:00",
       "last_published_at": "2026-02-24T06:23:06.993000+00:00",
@@ -3280,26 +3573,6 @@
       "author_alias": "masberta",
       "author_name": "Max",
       "is_competition": false
-    },
-    {
-      "id": "/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
-      "content_id": "/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
-      "title": "AIdeas: MemoryBridge",
-      "content_type": "ARTICLE",
-      "likes_count": 3,
-      "comments_count": 2,
-      "views_count": null,
-      "velocity": 3.0,
-      "created_ts": 1772283348.267,
-      "created_at": "2026-02-28T12:55:48.267000+00:00",
-      "last_published_at": "2026-02-20T00:51:10.167000+00:00",
-      "uri": "",
-      "url": "https://builder.aws.com/content/39sYwX9TvtQuRf3yWvZKq6IRdmn",
-      "status": "live",
-      "region": "Global",
-      "author_alias": "aoki9uhuru",
-      "author_name": "Takao AOKI",
-      "is_competition": true
     },
     {
       "id": "/content/39mEGMF2RFcE1Yt3xZ97TKFz4Xs",
@@ -3822,6 +4095,66 @@
       "is_competition": false
     },
     {
+      "id": "/content/2bzlE8TDQtTh1UGMYfW5NshnnwL",
+      "content_id": "/content/2bzlE8TDQtTh1UGMYfW5NshnnwL",
+      "title": "Philosophize This: An Interactive App for Learning Philosophy",
+      "content_type": "ARTICLE",
+      "likes_count": 3,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1707225673.625,
+      "created_at": "2024-02-06T13:21:13.625000+00:00",
+      "last_published_at": "2024-02-06T14:52:10.979000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2bzlE8TDQtTh1UGMYfW5NshnnwL",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "sbad",
+      "author_name": "Shreya",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2drbcpmaBORz25L3e74AM6EIcFj",
+      "content_id": "/content/2drbcpmaBORz25L3e74AM6EIcFj",
+      "title": "Build A Translator App in 30 Min or Less",
+      "content_type": "ARTICLE",
+      "likes_count": 3,
+      "comments_count": 1,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1710769227.126,
+      "created_at": "2024-03-18T13:40:27.126000+00:00",
+      "last_published_at": "2023-09-15T00:00:00+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2drbcpmaBORz25L3e74AM6EIcFj",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "elizabethfuentes12",
+      "author_name": "Elizabeth Fuentes",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2lkdo0f6Yemfj1cbahZnlq7BKdr",
+      "content_id": "/content/2lkdo0f6Yemfj1cbahZnlq7BKdr",
+      "title": "Benefits of using Amazon Q Developer in IDE",
+      "content_type": "ARTICLE",
+      "likes_count": 3,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1725728178.468,
+      "created_at": "2024-09-07T16:56:18.468000+00:00",
+      "last_published_at": "2024-09-08T08:02:24.760000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2lkdo0f6Yemfj1cbahZnlq7BKdr",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "adeelabbas",
+      "author_name": "Adeel Abbas",
+      "is_competition": false
+    },
+    {
       "id": "/content/3AI4BHzbntL0kcbDWmdwcmd8K8Z",
       "content_id": "/content/3AI4BHzbntL0kcbDWmdwcmd8K8Z",
       "title": "AIdeas: NetProbe Lite - Network Evidence Packs for AWS",
@@ -3849,7 +4182,11 @@
       "likes_count": 2,
       "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.86,
+=======
+      "velocity": 0.85,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772112728.578,
       "created_at": "2026-02-26T13:32:08.578000+00:00",
       "last_published_at": "2026-02-26T14:17:35.176000+00:00",
@@ -3869,7 +4206,11 @@
       "likes_count": 2,
       "comments_count": 2,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.78,
+=======
+      "velocity": 0.77,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772090923.825,
       "created_at": "2026-02-26T07:28:43.825000+00:00",
       "last_published_at": "2026-02-26T07:49:23.046000+00:00",
@@ -3889,7 +4230,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.75,
+=======
+      "velocity": 1.71,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772214564.709,
       "created_at": "2026-02-27T17:49:24.709000+00:00",
       "last_published_at": "2026-02-27T17:23:17.408000+00:00",
@@ -3929,7 +4274,11 @@
       "likes_count": 2,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.82,
+=======
+      "velocity": 0.81,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772101826.583,
       "created_at": "2026-02-26T10:30:26.583000+00:00",
       "last_published_at": "2026-02-26T10:17:04.353000+00:00",
@@ -3949,7 +4298,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.44,
+=======
+      "velocity": 1.41,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772193072.088,
       "created_at": "2026-02-27T11:51:12.088000+00:00",
       "last_published_at": "2026-02-27T11:44:42.884000+00:00",
@@ -3969,7 +4322,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.91,
+=======
+      "velocity": 0.9,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772124423.981,
       "created_at": "2026-02-26T16:47:03.981000+00:00",
       "last_published_at": "2026-02-26T16:52:24.668000+00:00",
@@ -3989,7 +4346,11 @@
       "likes_count": 2,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.66,
+=======
+      "velocity": 0.65,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772051257.705,
       "created_at": "2026-02-25T20:27:37.705000+00:00",
       "last_published_at": "2026-02-24T22:51:10.104000+00:00",
@@ -4009,7 +4370,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.83,
+=======
+      "velocity": 0.82,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772104520.415,
       "created_at": "2026-02-26T11:15:20.415000+00:00",
       "last_published_at": "2026-02-26T12:59:55.867000+00:00",
@@ -4029,7 +4394,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.64,
+=======
+      "velocity": 0.63,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772041962.437,
       "created_at": "2026-02-25T17:52:42.437000+00:00",
       "last_published_at": "2026-02-25T17:35:30.572000+00:00",
@@ -4049,7 +4418,11 @@
       "likes_count": 2,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.72,
+=======
+      "velocity": 1.68,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772213017.001,
       "created_at": "2026-02-27T17:23:37.001000+00:00",
       "last_published_at": "2026-02-27T06:28:37.957000+00:00",
@@ -4089,7 +4462,11 @@
       "likes_count": 2,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.19,
+=======
+      "velocity": 0.18,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1771380426.841,
       "created_at": "2026-02-18T02:07:06.841000+00:00",
       "last_published_at": "2026-02-26T16:43:43.084000+00:00",
@@ -4169,7 +4546,11 @@
       "likes_count": 2,
       "comments_count": 3,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 1.36,
+=======
+      "velocity": 1.33,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772186029.822,
       "created_at": "2026-02-27T09:53:49.822000+00:00",
       "last_published_at": "2026-02-19T02:20:00.793000+00:00",
@@ -5122,6 +5503,49 @@
       "is_competition": false
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "/content/2arcdg4saNZnRcllCV5PCAdnl5J",
+      "content_id": "/content/2arcdg4saNZnRcllCV5PCAdnl5J",
+      "title": "Deploying Docker Compose with Greengrass!",
+      "content_type": "ARTICLE",
+      "likes_count": 2,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1708119796.818,
+      "created_at": "2024-02-16T21:43:16.818000+00:00",
+      "last_published_at": "2024-01-22T19:11:05.283000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2arcdg4saNZnRcllCV5PCAdnl5J",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "mikelikesrobots",
+      "author_name": "Mike Likes Robots",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2bVKemXLmJ0mKWCp2Up72nPrZjo",
+      "content_id": "/content/2bVKemXLmJ0mKWCp2Up72nPrZjo",
+      "title": "Personalized Quiz: A dive into my hackathon GenAI project using PartyRock",
+      "content_type": "ARTICLE",
+      "likes_count": 2,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1710214549.322,
+      "created_at": "2024-03-12T03:35:49.322000+00:00",
+      "last_published_at": "2024-03-11T21:22:39.886000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2bVKemXLmJ0mKWCp2Up72nPrZjo",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "dixitrathod",
+      "author_name": "Dixit R Jain",
+      "is_competition": false
+    },
+    {
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "id": "/content/3AJQKAKP72vg0HRIuMHSU8wIxij",
       "content_id": "/content/3AJQKAKP72vg0HRIuMHSU8wIxij",
       "title": "Deploying Nexus in Production as a Private Docker Registry",
@@ -5289,7 +5713,11 @@
       "likes_count": 1,
       "comments_count": 1,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.34,
+=======
+      "velocity": 0.33,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772055546.69,
       "created_at": "2026-02-25T21:39:06.690000+00:00",
       "last_published_at": "2026-02-25T21:38:30.580000+00:00",
@@ -5309,7 +5737,11 @@
       "likes_count": 1,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.74,
+=======
+      "velocity": 0.72,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772195998.224,
       "created_at": "2026-02-27T12:39:58.224000+00:00",
       "last_published_at": "2026-02-27T13:16:38.722000+00:00",
@@ -5389,7 +5821,11 @@
       "likes_count": 1,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.81,
+=======
+      "velocity": 0.79,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772206134.087,
       "created_at": "2026-02-27T15:28:54.087000+00:00",
       "last_published_at": "2026-02-26T20:08:42.400000+00:00",
@@ -5489,7 +5925,11 @@
       "likes_count": 1,
       "comments_count": 0,
       "views_count": null,
+<<<<<<< HEAD
       "velocity": 0.28,
+=======
+      "velocity": 0.27,
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "created_ts": 1772000233.597,
       "created_at": "2026-02-25T06:17:13.597000+00:00",
       "last_published_at": "2026-02-25T06:34:35.362000+00:00",
@@ -5809,7 +6249,7 @@
       "likes_count": 1,
       "comments_count": 0,
       "views_count": null,
-      "velocity": 0.18,
+      "velocity": 0.17,
       "created_ts": 1771820302.302,
       "created_at": "2026-02-23T04:18:22.302000+00:00",
       "last_published_at": "2026-02-08T04:16:15.495000+00:00",
@@ -7542,6 +7982,289 @@
       "is_competition": false
     },
     {
+<<<<<<< HEAD
+=======
+      "id": "/content/370lq8zDdKro24MelCLGpLeOv98",
+      "content_id": "/content/370lq8zDdKro24MelCLGpLeOv98",
+      "title": "AWS finally embraces the MultiCloud!",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1766048057.446,
+      "created_at": "2025-12-18T08:54:17.446000+00:00",
+      "last_published_at": "2025-12-18T09:06:14.545000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/370lq8zDdKro24MelCLGpLeOv98",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "enziety",
+      "author_name": "Ansley Adrian Moyo",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2djb1RwF1fubZJM8pTUWfyCg7Ob",
+      "content_id": "/content/2djb1RwF1fubZJM8pTUWfyCg7Ob",
+      "title": "Fortifying IAM Practices: Progamatic Approaches to AWS IAM User Detail Retrieval",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1710524219.225,
+      "created_at": "2024-03-15T17:36:59.225000+00:00",
+      "last_published_at": "2024-03-16T12:16:36.183000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2djb1RwF1fubZJM8pTUWfyCg7Ob",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "souravwm",
+      "author_name": "Sourav Chakraborty",
+      "is_competition": false
+    },
+    {
+      "id": "/content/32xAoYib0KhwipXUwjOzQogksKc",
+      "content_id": "/content/32xAoYib0KhwipXUwjOzQogksKc",
+      "title": "Bringing Democracy to the classroom with \"Election\" project.",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1758358741.433,
+      "created_at": "2025-09-20T08:59:01.433000+00:00",
+      "last_published_at": "2025-09-20T07:16:52.283000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/32xAoYib0KhwipXUwjOzQogksKc",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "pixelrick",
+      "author_name": "pixelrick",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2gr8muzN93M6UIktxOVO3edkZ3I",
+      "content_id": "/content/2gr8muzN93M6UIktxOVO3edkZ3I",
+      "title": "Mapping Time: Exploring Service Boundaries with Amazon Location Services Isolines",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1716444498.526,
+      "created_at": "2024-05-23T06:08:18.526000+00:00",
+      "last_published_at": "2025-01-14T03:52:33.008000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2gr8muzN93M6UIktxOVO3edkZ3I",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "sjcook",
+      "author_name": "Steven Cook",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2j9F7kozxrN0FLDMc7t1iMPSFnf",
+      "content_id": "/content/2j9F7kozxrN0FLDMc7t1iMPSFnf",
+      "title": "Securing EC2 Instances - Part 2 | S2Ep6 | Security Ramp-Up",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1720791220.778,
+      "created_at": "2024-07-12T13:33:40.778000+00:00",
+      "last_published_at": "2024-07-12T14:06:56.754000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2j9F7kozxrN0FLDMc7t1iMPSFnf",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "benfletc",
+      "author_name": "Ben Fletcher",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2xmw4TDzoO7Tg0N2bJ8HqEPWRVe",
+      "content_id": "/content/2xmw4TDzoO7Tg0N2bJ8HqEPWRVe",
+      "title": " Amazon RDS: Making your S3 exported snapshots queryable with Amazon Athena",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1760482751.51,
+      "created_at": "2025-10-14T22:59:11.510000+00:00",
+      "last_published_at": "2025-10-14T22:58:29.442000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2xmw4TDzoO7Tg0N2bJ8HqEPWRVe",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "frankbpr",
+      "author_name": "Frank",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2oU2nqcfEBnMPU5slpscunWcLZM",
+      "content_id": "/content/2oU2nqcfEBnMPU5slpscunWcLZM",
+      "title": "Vision Transformers for Image Classification: A Deep Dive",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1730976730.327,
+      "created_at": "2024-11-07T10:52:10.327000+00:00",
+      "last_published_at": "2024-11-06T16:59:50.336000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2oU2nqcfEBnMPU5slpscunWcLZM",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "balaaj",
+      "author_name": "Balaj Saleem",
+      "is_competition": false
+    },
+    {
+      "id": "/content/39EuIoCNl8hH0EotuD45eJ547as",
+      "content_id": "/content/39EuIoCNl8hH0EotuD45eJ547as",
+      "title": "DeFi收益[6]：DeFi收益最大化回顾",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.04,
+      "created_ts": 1770273473.082,
+      "created_at": "2026-02-05T06:37:53.082000+00:00",
+      "last_published_at": "2026-02-05T06:38:45.925000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/39EuIoCNl8hH0EotuD45eJ547as",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "N/A",
+      "author_name": "Anonymous",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2zw5wD0rttBOZwrlpJa1UCRqioT",
+      "content_id": "/content/2zw5wD0rttBOZwrlpJa1UCRqioT",
+      "title": "Invoking long-running synchronous ECS Tasks from AWS Step Functions",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1755826901.967,
+      "created_at": "2025-08-22T01:41:41.967000+00:00",
+      "last_published_at": "2025-08-21T21:57:40.899000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2zw5wD0rttBOZwrlpJa1UCRqioT",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "guildupont",
+      "author_name": "Guillaume Dupont",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2zo16pNcEvQHtHpwSaxfFr8nf37",
+      "content_id": "/content/2zo16pNcEvQHtHpwSaxfFr8nf37",
+      "title": "AI Agents Design Patterns: Reflection Pattern Using Strands Agents",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1753189472.455,
+      "created_at": "2025-07-22T13:04:32.455000+00:00",
+      "last_published_at": "2025-07-21T23:10:01.886000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2zo16pNcEvQHtHpwSaxfFr8nf37",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "sriamir",
+      "author_name": "Srinivasa amirapu",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2wU80kx9AGKffwuW7SpfI4jtoIq",
+      "content_id": "/content/2wU80kx9AGKffwuW7SpfI4jtoIq",
+      "title": "AWS Recertification: What’s Changed & What Still Matters",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 1,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1746084570.883,
+      "created_at": "2025-05-01T07:29:30.883000+00:00",
+      "last_published_at": "2025-05-01T07:41:10.542000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2wU80kx9AGKffwuW7SpfI4jtoIq",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "rajeshnair24",
+      "author_name": "Rajesh Murali Nair",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2dft7cEB7L5yhmN9bQaXcmItXcx",
+      "content_id": "/content/2dft7cEB7L5yhmN9bQaXcmItXcx",
+      "title": "Topic or a Queue - What exactly is Apache Kafka?",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1710410793.803,
+      "created_at": "2024-03-14T10:06:33.803000+00:00",
+      "last_published_at": "2022-08-31T00:00:00+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2dft7cEB7L5yhmN9bQaXcmItXcx",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "abhishekgupta",
+      "author_name": "Abhishek Gupta",
+      "is_competition": false
+    },
+    {
+      "id": "/content/36IP1q5ctZbn2ZM9Ve9Qp5JzFXn",
+      "content_id": "/content/36IP1q5ctZbn2ZM9Ve9Qp5JzFXn",
+      "title": "Corporate-Translator",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.01,
+      "created_ts": 1764690899.678,
+      "created_at": "2025-12-02T15:54:59.678000+00:00",
+      "last_published_at": "2025-12-02T17:12:03.585000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/36IP1q5ctZbn2ZM9Ve9Qp5JzFXn",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "livingcool",
+      "author_name": "Ganesh Khovalan",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2hdtaW9Y5pT0rcNiTqE2V76L0XT",
+      "content_id": "/content/2hdtaW9Y5pT0rcNiTqE2V76L0XT",
+      "title": "full-stack cloud-native app with an SSL  with Route53",
+      "content_type": "ARTICLE",
+      "likes_count": 1,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1717935846.002,
+      "created_at": "2024-06-09T12:24:06.002000+00:00",
+      "last_published_at": "2024-06-18T07:48:33.493000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2hdtaW9Y5pT0rcNiTqE2V76L0XT",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "joelwembo",
+      "author_name": "JOEL OTEPA WEMBO",
+      "is_competition": false
+    },
+    {
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
       "id": "/content/3A6cC9F0EdPcrCHDmyVxE8EXCXF",
       "content_id": "/content/3A6cC9F0EdPcrCHDmyVxE8EXCXF",
       "title": "Building NovaMentor: An Autonomous Learning Agent Powered by Amazon Nova 2 Lite",
@@ -10960,6 +11683,389 @@
       "author_alias": "gnanvi2905",
       "author_name": "GNANVI VINAYAK",
       "is_competition": false
+<<<<<<< HEAD
+=======
+    },
+    {
+      "id": "/content/2dUOYvwxSYqqUOBGbXxCZwwzv0j",
+      "content_id": "/content/2dUOYvwxSYqqUOBGbXxCZwwzv0j",
+      "title": "Algebra Tutor App",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1710059241.253,
+      "created_at": "2024-03-10T08:27:21.253000+00:00",
+      "last_published_at": "2024-03-10T20:42:18.007000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2dUOYvwxSYqqUOBGbXxCZwwzv0j",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "angu10",
+      "author_name": "angu10",
+      "is_competition": false
+    },
+    {
+      "id": "/content/37KbTObVP7c82yEvVnf3G5gkJkg",
+      "content_id": "/content/37KbTObVP7c82yEvVnf3G5gkJkg",
+      "title": "RDP vs VPS: Which is Best for AI Model Training?",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1766654716.297,
+      "created_at": "2025-12-25T09:25:16.297000+00:00",
+      "last_published_at": "2025-12-25T09:26:34.343000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/37KbTObVP7c82yEvVnf3G5gkJkg",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "N/A",
+      "author_name": "Anonymous",
+      "is_competition": false
+    },
+    {
+      "id": "/content/32g3CkPOGtn8RIY7pfMNZd0kDnV",
+      "content_id": "/content/32g3CkPOGtn8RIY7pfMNZd0kDnV",
+      "title": "Build my webiste using aws services",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1757836671.257,
+      "created_at": "2025-09-14T07:57:51.257000+00:00",
+      "last_published_at": "2025-09-14T05:41:18.783000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/32g3CkPOGtn8RIY7pfMNZd0kDnV",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "officialrahulmandal",
+      "author_name": "Rahul kumar mandal",
+      "is_competition": false
+    },
+    {
+      "id": "/content/31szeZ2liReASpwMxp1ZfrT2FpJ",
+      "content_id": "/content/31szeZ2liReASpwMxp1ZfrT2FpJ",
+      "title": "AWS Tech Tales | S4 E22 | The Tale of CLI Problem Solving ",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1756327663.285,
+      "created_at": "2025-08-27T20:47:43.285000+00:00",
+      "last_published_at": "2025-08-27T20:56:45.151000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/31szeZ2liReASpwMxp1ZfrT2FpJ",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "awsmattberk",
+      "author_name": "Matt Berk",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2yJJbqHBUz55bcU0hCSi0VRlioP",
+      "content_id": "/content/2yJJbqHBUz55bcU0hCSi0VRlioP",
+      "title": "Optimizing Power Query: Tips and Tricks for Faster Data Loads",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1749546816.475,
+      "created_at": "2025-06-10T09:13:36.475000+00:00",
+      "last_published_at": "2025-06-11T05:41:58.472000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2yJJbqHBUz55bcU0hCSi0VRlioP",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "akanshatcroma",
+      "author_name": "akanshatcroma",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2sjTNplPorMaBVJJTFWqht80N1l",
+      "content_id": "/content/2sjTNplPorMaBVJJTFWqht80N1l",
+      "title": "Multi Cloud - HA Between AWS and GCP",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1750537801.065,
+      "created_at": "2025-06-21T20:30:01.065000+00:00",
+      "last_published_at": "2025-02-08T00:44:42.677000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2sjTNplPorMaBVJJTFWqht80N1l",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "fadynabil",
+      "author_name": "Fady Nabil",
+      "is_competition": false
+    },
+    {
+      "id": "/content/394G7YYOBNtZk2c9fki9DCnSJGk",
+      "content_id": "/content/394G7YYOBNtZk2c9fki9DCnSJGk",
+      "title": "AWS Community Day 2025 - Charater Battle 프롬프트 챌린지",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1769948159.116,
+      "created_at": "2026-02-01T12:15:59.116000+00:00",
+      "last_published_at": "2026-02-01T12:15:51.507000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/394G7YYOBNtZk2c9fki9DCnSJGk",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "alone",
+      "author_name": "MintaeKim",
+      "is_competition": false
+    },
+    {
+      "id": "/content/384Zni3MfDzbL5BZIaAEXq0Ah9F",
+      "content_id": "/content/384Zni3MfDzbL5BZIaAEXq0Ah9F",
+      "title": "Kiro Project - Week 6",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1768061342.205,
+      "created_at": "2026-01-10T16:09:02.205000+00:00",
+      "last_published_at": "2026-01-10T16:08:51.327000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/384Zni3MfDzbL5BZIaAEXq0Ah9F",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "akshayareddy",
+      "author_name": "Akshaya Reddy",
+      "is_competition": false
+    },
+    {
+      "id": "/content/32yKWqs9YDt9Umbnd29S5ZcXHek",
+      "content_id": "/content/32yKWqs9YDt9Umbnd29S5ZcXHek",
+      "title": "Building a Serverless Data Analytics Pipeline for Customer Churn on AWS",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1758387406.275,
+      "created_at": "2025-09-20T16:56:46.275000+00:00",
+      "last_published_at": "2025-09-20T16:59:37.175000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/32yKWqs9YDt9Umbnd29S5ZcXHek",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "ajithmanmadhan",
+      "author_name": "Ajith Manmadhan",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2y5TviQJ7EM143rdR536KmphYIu",
+      "content_id": "/content/2y5TviQJ7EM143rdR536KmphYIu",
+      "title": "How Is AWS Redefining Technologies?",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1749123666.588,
+      "created_at": "2025-06-05T11:41:06.588000+00:00",
+      "last_published_at": "2025-06-05T11:50:31.918000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2y5TviQJ7EM143rdR536KmphYIu",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "N/A",
+      "author_name": "Anonymous",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2ylbEgyWzQyOJti5iJYJhUZCttO",
+      "content_id": "/content/2ylbEgyWzQyOJti5iJYJhUZCttO",
+      "title": "GenAI-Powered Intelligent Document Processing for Indian IDs",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1750411996.175,
+      "created_at": "2025-06-20T09:33:16.175000+00:00",
+      "last_published_at": "2025-06-20T09:52:03.167000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2ylbEgyWzQyOJti5iJYJhUZCttO",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "shaileshshivakumar",
+      "author_name": "Shailesh Shivakumar",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2wDojlSRlsfH6V658kgqaymFjTp",
+      "content_id": "/content/2wDojlSRlsfH6V658kgqaymFjTp",
+      "title": "Application Performance - Content delivery in China",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1745585642.591,
+      "created_at": "2025-04-25T12:54:02.591000+00:00",
+      "last_published_at": "2025-04-29T18:30:49.482000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2wDojlSRlsfH6V658kgqaymFjTp",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "achrafsouk",
+      "author_name": "Achraf Souk",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2wSJoh6lGcWbfI9EZXqPJE56h64",
+      "content_id": "/content/2wSJoh6lGcWbfI9EZXqPJE56h64",
+      "title": "Deploying Serverless applications with AWS SAM",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1746029217.174,
+      "created_at": "2025-04-30T16:06:57.174000+00:00",
+      "last_published_at": "2025-04-30T16:52:55.149000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2wSJoh6lGcWbfI9EZXqPJE56h64",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "cpiyush151",
+      "author_name": "Piyush Chaudhari",
+      "is_competition": false
+    },
+    {
+      "id": "/content/37SMVLozhV8tOETgo7hnW3MKCo2",
+      "content_id": "/content/37SMVLozhV8tOETgo7hnW3MKCo2",
+      "title": "Agentic workflows using Strands and Bedrock Agent Core",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1766892041.096,
+      "created_at": "2025-12-28T03:20:41.096000+00:00",
+      "last_published_at": "2025-12-28T04:04:36.257000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/37SMVLozhV8tOETgo7hnW3MKCo2",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "manoj2690",
+      "author_name": "Manoj Kumar S",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2iCm3L9n4kFSXUYbklk1GyivSrt",
+      "content_id": "/content/2iCm3L9n4kFSXUYbklk1GyivSrt",
+      "title": "Lightsail vs AWS Compute: Comparing Costs with AWS Pricing Calculator",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1719002732.244,
+      "created_at": "2024-06-21T20:45:32.244000+00:00",
+      "last_published_at": "2023-11-08T00:00:00+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2iCm3L9n4kFSXUYbklk1GyivSrt",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "communityawsadmin",
+      "author_name": "AWS Admin",
+      "is_competition": false
+    },
+    {
+      "id": "/content/362wFIrUxpZY90BC8IO1q58rGBt",
+      "content_id": "/content/362wFIrUxpZY90BC8IO1q58rGBt",
+      "title": "Building a Content Summarizer Using Amazon Bedrock",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1764217868.89,
+      "created_at": "2025-11-27T04:31:08.890000+00:00",
+      "last_published_at": "2025-11-27T08:07:59.136000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/362wFIrUxpZY90BC8IO1q58rGBt",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "mayankaws",
+      "author_name": "Mayank Shrivastava",
+      "is_competition": false
+    },
+    {
+      "id": "/content/3ADBRZtN2DSQEgLOa3ga88M4dnx",
+      "content_id": "/content/3ADBRZtN2DSQEgLOa3ga88M4dnx",
+      "title": "How many AZs you need to deploy to in Prod Environment?",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1772119859.039,
+      "created_at": "2026-02-26T15:30:59.039000+00:00",
+      "last_published_at": "2026-02-26T14:52:24.522000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/3ADBRZtN2DSQEgLOa3ga88M4dnx",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "demichev",
+      "author_name": "Denis Demichev",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2sq4f4SSDfzT1KukzgXXRNsRa2e",
+      "content_id": "/content/2sq4f4SSDfzT1KukzgXXRNsRa2e",
+      "title": "What You Need to Know About AI:Applications Careers & Trends",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1739169870.697,
+      "created_at": "2025-02-10T06:44:30.697000+00:00",
+      "last_published_at": "2025-02-10T06:58:10.084000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2sq4f4SSDfzT1KukzgXXRNsRa2e",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "N/A",
+      "author_name": "Anonymous",
+      "is_competition": false
+    },
+    {
+      "id": "/content/2wR462rhTDcbZi97BiC8Jt2512C",
+      "content_id": "/content/2wR462rhTDcbZi97BiC8Jt2512C",
+      "title": "Deploying a Sample Serverless Application Using AWS SAM: A Step-by-Step Guide",
+      "content_type": "ARTICLE",
+      "likes_count": 0,
+      "comments_count": 0,
+      "views_count": null,
+      "velocity": 0.0,
+      "created_ts": 1745990873.082,
+      "created_at": "2025-04-30T05:27:53.082000+00:00",
+      "last_published_at": "2025-11-05T04:14:32.426000+00:00",
+      "uri": "",
+      "url": "https://builder.aws.com/content/2wR462rhTDcbZi97BiC8Jt2512C",
+      "status": "live",
+      "region": "Global",
+      "author_alias": "cpiyush151",
+      "author_name": "Piyush Chaudhari",
+      "is_competition": false
+>>>>>>> bcdb98143fec95da205049fb09c8cc632240a43d
     }
   ]
 }
