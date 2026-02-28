@@ -350,7 +350,7 @@
                 startRefreshCountdown();
             } catch (e) {
                 console.error("Failed to load data", e);
-                document.querySelector('#overlay p').textContent = "ERROR LOADING DATA. PLEASE ENSURE DATA.JSON EXISTS.";
+                document.querySelector('#overlay p').textContent = "ERROR LOADING DATA. PLEASE ENSURE AWS_BUILDER_LIKES.JSON EXISTS.";
                 document.querySelector('.loader').style.borderTopColor = "#ef4444";
             }
         }
