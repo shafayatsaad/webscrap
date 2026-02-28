@@ -326,15 +326,41 @@
 
         async function init() {
             try {
-                const res = await fetch('aws_builder_likes.json?_=' + Date.now());
-                const data = await res.json();
+                let data = null;
+                const githubUrl = 'https://raw.githubusercontent.com/shafayatsaad/webscrap/main/dist/aws_builder_likes.json?_=' + Date.now();
+                const localUrl = 'aws_builder_likes.json?_=' + Date.now();
+                
+                try {
+                    // Try fetching the live version from GitHub first, with a 5 second timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    
+                    const githubRes = await fetch(githubUrl, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    if (githubRes.ok) {
+                        data = await githubRes.json();
+                        console.log("Loaded LIVE data from GitHub:", data.posts ? data.posts.length : data.length, "posts");
+                    } else {
+                        throw new Error(`GitHub fetch failed with status: ${githubRes.status}`);
+                    }
+                } catch (githubErr) {
+                    console.warn("Could not load live GitHub data, falling back to local stored data.", githubErr);
+                    // Fallback to local stored data
+                    const localRes = await fetch(localUrl);
+                    if (!localRes.ok) throw new Error(`Local fetch failed with status: ${localRes.status}`);
+                    data = await localRes.json();
+                    console.log("Loaded fallback LOCAL data:", data.posts ? data.posts.length : data.length, "posts");
+                }
                 
                 // Handle new or old structure
-                if (data.posts) {
+                if (data && data.posts) {
                     allData = data.posts;
                     scrapedAt = data.scraped_at;
-                } else {
+                } else if (data) {
                     allData = data;
+                } else {
+                    throw new Error("No data retrieved from any source");
                 }
                 
                 // Remove duplicates - keeping original order as base
