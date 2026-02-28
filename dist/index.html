@@ -337,12 +337,9 @@
                     allData = data;
                 }
                 
-                // Sort by likes descending
-                allData.sort((a,b) => b.likes_count - a.likes_count);
-                
-                // Remove duplicates
+                // Remove duplicates - keeping original order as base
                 const seen = new Set();
-                allData = allData.filter(p => !seen.has(p.id) && seen.add(p.id));
+                allData = allData.filter(p => p.id && !seen.has(p.id) && seen.add(p.id));
 
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('main').style.display = 'block';
@@ -514,8 +511,21 @@
         }
 
         function applyFilters() {
-            let data = allData;
-            if (currentTab === 'comp') data = data.filter(p => p.is_competition);
+            let data = [...allData]; // Fresh copy each time
+            
+            if (currentTab === 'comp') {
+                // Strictly Competition: filter and sort by Likes
+                data = data.filter(p => p.is_competition);
+                data.sort((a,b) => (b.likes_count || 0) - (a.likes_count || 0));
+            } else {
+                // Global Feed: Mixed content, sort by Date (Newest first)
+                data.sort((a,b) => {
+                    const dateA = new Date(a.last_published_at || a.created_at);
+                    const dateB = new Date(b.last_published_at || b.created_at);
+                    return dateB - dateA;
+                });
+            }
+            
             if (searchQuery) {
                 data = data.filter(p => 
                     (p.title && p.title.toLowerCase().includes(searchQuery)) || 
