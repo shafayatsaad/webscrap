@@ -52,19 +52,22 @@ HIGHLIGHT_POST_URI = "/content/3AAMRb7lRzAJnleldfYBBtfM1WG/aideas-transforming-h
 COMPETITION_KEYWORDS = [
     "AIdeas", "AI ideas", "healthcare", "wellness", "competition",
     "Kiro", "Mimamori", "wellness companion", "AI-powered wellness",
-    "wellness avatar", "health AI", "medical AI"
+    "wellness avatar", "health AI", "medical AI", "10,000", "10000",
+    "AWS Competition", "Ideathon"
 ]
 
 
 def is_competition_post(post):
     """Determine if a post is related to the competition."""
-    title = post.get("title", "").lower()
-    uri = post.get("id", "").lower()
+    title = (post.get("title", "") or "").lower()
+    uri = (post.get("id", "") or "").lower()
+    content_id = (post.get("content_id", "") or "").lower()
 
     # Check highlight post first
     if HIGHLIGHT_POST_URI and (
         HIGHLIGHT_POST_URI.lower() in uri
-        or post.get("id", "") in HIGHLIGHT_POST_URI
+        or HIGHLIGHT_POST_URI.lower() in content_id
+        or post.get("id", "").lower() in HIGHLIGHT_POST_URI.lower()
     ):
         return True
 
@@ -223,6 +226,7 @@ def fetch_all_posts(session, content_type):
 
             post_data = {
                 "id": content_id,
+                "content_id": content_id,
                 "title": item.get("title", "Untitled"),
                 "content_type": item.get("contentType", content_type),
                 "likes_count": item.get("likesCount", 0),
