@@ -45,6 +45,10 @@ PAGE_SIZE = 50  # Max items per API request
 OUTPUT_CSV = "aws_builder_likes.csv"
 OUTPUT_JSON = "aws_builder_likes.json"
 
+# Competition timeframe configuration
+COMPETITION_START_DATE = "2026-02-11 00:00:00"
+COMPETITION_START_TIMESTAMP = datetime.strptime(COMPETITION_START_DATE, "%Y-%m-%d %H:%M:%S").timestamp()
+
 # The post to highlight/compare ranking for
 HIGHLIGHT_POST_URI = "/content/3AAMRb7lRzAJnleldfYBBtfM1WG/aideas-transforming-healthcare-into-ai-powered-wellness-companion"
 
@@ -194,12 +198,14 @@ def format_timestamp(ts):
 
 
 def fetch_all_posts(session, content_type):
-    """Fetch ALL posts of a given type by following pagination tokens."""
+    """Fetch all posts from the competition timeframe (Feb 11 onwards)."""
     all_posts = []
     next_token = None
     page = 0
+    old_post_streak = 0
+    now_ts = datetime.now().timestamp()
 
-    print_info(f"Fetching '{content_type}' posts...")
+    print_info(f"Fetching '{content_type}' articles from {COMPETITION_START_DATE} onwards...")
 
     while True:
         page += 1
@@ -212,7 +218,21 @@ def fetch_all_posts(session, content_type):
         if not feed_contents:
             break
 
+        page_new_count = 0
         for item in feed_contents:
+            created_ts = item.get("createdAt")
+            if created_ts and created_ts > 1e12:
+                created_ts = created_ts / 1000  # Convert ms to s
+
+            # Date Filtering
+            if created_ts < COMPETITION_START_TIMESTAMP:
+                old_post_streak += 1
+                continue
+            
+            # Reset streak if we find a new post (unlikely but safe)
+            old_post_streak = 0
+            page_new_count += 1
+
             content_id = item.get("contentId", "N/A")
             uri = item.get("uri", "")
 
@@ -224,39 +244,47 @@ def fetch_all_posts(session, content_type):
             else:
                 final_url = BASE_URL
 
+            # Calculate Velocity (Likes per day)
+            days_since = max(1, (now_ts - created_ts) / 86400)
+            likes = item.get("likesCount", 0)
+            velocity = round(likes / days_since, 2)
+
             post_data = {
                 "id": content_id,
                 "content_id": content_id,
                 "title": item.get("title", "Untitled"),
                 "content_type": item.get("contentType", content_type),
-                "likes_count": item.get("likesCount", 0),
+                "likes_count": likes,
                 "comments_count": item.get("commentsCount", 0),
                 "views_count": item.get("viewsCount") if "viewsCount" in item else None,
+                "velocity": velocity,
                 "created_at": format_timestamp(item.get("createdAt")),
+                "created_ts": created_ts,
                 "last_published_at": format_timestamp(item.get("lastPublishedAt")),
                 "uri": uri,
                 "url": final_url,
                 "status": item.get("status", ""),
-                "locale": item.get("locale", ""),
                 "author_alias": (item.get("author", {}) or {}).get("alias", "N/A"),
                 "author_name": (item.get("author", {}) or {}).get("preferredName", "N/A"),
-                "follow_count": item.get("followCount", 0),
-                "space_id": item.get("spaceId"),
                 "space_name": item.get("spaceName"),
             }
             post_data["is_competition"] = is_competition_post(post_data)
             all_posts.append(post_data)
 
-        print_info(f"  Page {page}: {len(feed_contents)} items (total: {len(all_posts)})")
+        print_info(f"  Page {page}: {page_new_count} new items (total: {len(all_posts)})")
+
+        # Stop condition: if an entire page is old, we're likely done with the competition period
+        if old_post_streak >= PAGE_SIZE:
+            print_info(f"Reached posts older than {COMPETITION_START_DATE}. Ending fetch.")
+            break
 
         next_token = result.get("nextToken")
         if not next_token:
             break
 
-        # Small delay to be respectful
         time.sleep(0.3)
 
-    print_success(f"Fetched {len(all_posts)} '{content_type}' posts across {page} page(s)")
+    print_success(f"Fetched {len(all_posts)} articles from the competition period.")
     return all_posts
 
 
