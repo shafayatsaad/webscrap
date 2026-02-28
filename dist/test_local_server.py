@@ -4,8 +4,8 @@ import time
 
 o = Options()
 o.add_argument('--headless=new')
+o.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 d = webdriver.Chrome(options=o)
-d.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 d.get('http://localhost:8000/')
 time.sleep(5)
 
