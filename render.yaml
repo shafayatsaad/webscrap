@@ -1,8 +1,5 @@
 services:
-  - type: web
-    name: aws-builder-rankings
-    runtime: docker
-    envVars:
-      - key: HEADLESS
-        value: "true"
+  - type: static
+    name: aideas-ranking
+    staticPublishDir: dist
     plan: free
