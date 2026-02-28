@@ -28,7 +28,7 @@ from flask import Flask, jsonify, render_template_string
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from aws_scraper import (
-    CONTENT_TYPES, HIGHLIGHT_POST_URI, BASE_URL,
+    HIGHLIGHT_POST_URI, BASE_URL,
     is_competition_post, format_timestamp,
 )
 from selenium import webdriver
