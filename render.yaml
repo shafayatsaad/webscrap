@@ -1,5 +1,0 @@
-services:
-  - type: static
-    name: aideas-ranking
-    staticPublishDir: dist
-    plan: free
