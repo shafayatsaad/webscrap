@@ -1,9 +1,7 @@
 name: AWS Builder Rank Auto-Refresh
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # Runs every 15 minutes
-  workflow_dispatch:      # Allows manual trigger from GitHub Actions tab
+  workflow_dispatch:      # Triggered by Live Sync button or GitHub Actions UI
 
 permissions:
   contents: write
